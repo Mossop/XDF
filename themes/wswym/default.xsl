@@ -200,23 +200,23 @@
 													<td colspan="2">
 														<table>
 															<tr>
-																<td>
-																	<a>
-																		<img src="images/paperclip.gif"/>
+																<td valign="middle">
+																	<a href="">
+																		<img align="middle" src="images/paperclip.gif"/>
 																		Attach File
 																	</a>
 																</td>
 																<td>|</td>
-																<td>
-																	<a>
-																		<img src="images/paperclip.gif"/>
+																<td valign="middle">
+																	<a href="">
+																		<img align="middle" src="images/edit.gif"/>
 																		Edit
 																	</a>
 																</td>
 																<td>|</td>
-																<td>
-																	<a>
-																		<img src="images/delete.gif"/>
+																<td valign="middle">
+																	<a href="">
+																		<img align="middle" src="images/delete.gif"/>
 																		Delete
 																	</a>
 																</td>
