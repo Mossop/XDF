@@ -95,7 +95,6 @@
 									<td width="338"><b>Thread</b></td>
 									<td width="100"><b>Author</b></td>
 									<td width="120" align="right"><b>Started</b></td>
-									<td width="20"></td>
 								</tr>
 								<xsl:for-each select="Thread">
 									<tr>
@@ -109,7 +108,6 @@
 											<xsl:value-of select="Person/@nickname"/>
 										</td>
 										<td align="right"><xsl:apply-templates select="Date"/></td>
-										<td></td>
 									</tr>
 								</xsl:for-each>
 							</table>
@@ -178,8 +176,11 @@
 							<h1>Messages in the thread &quot;<xsl:value-of select="@name"/>&quot;</h1>
 						</td>
 						<td valign="top" align="right">
-							<xsl:if test="$messageadmin=1">
-								Administration
+							<xsl:if test="($messageadmin=1) or (@owner=/DisplaySet/Login/Person/@id)">
+								<a>
+									<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=thread&amp;id2=<xsl:value-of select="@id"/>&amp;name2=threadedit&amp;folder=<xsl:value-of select="../@id"/>&amp;stylesheet=edit</xsl:attribute>
+									Administration
+								</a>
 							</xsl:if>
 						</td>
 					</tr>

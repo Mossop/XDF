@@ -12,7 +12,47 @@
 	<xsl:template match="Display[@name='peopleedit']">
 	</xsl:template>
 	
-	<xsl:template match="Display[@name='threadedit']">
+	<xsl:template match="Display[@name='threadedit']//Thread">
+		<h1>Administration for the &quot;<xsl:value-of select="@name"/>&quot; thread</h1>
+		<table>
+			<tr>
+				<form action="xdf.php" method="post">
+					<input type="hidden" name="command1" value="delete"/>
+					<input type="hidden" name="class1" value="thread"/>
+					<input type="hidden" name="id1">
+						<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+					</input>
+
+					<td>Delete this thread:</td>
+					<td colspan="2"><input type="submit" value="Delete"/></td>
+
+					<input type="hidden" name="command2" value="view"/>
+					<input type="hidden" name="class2" value="board"/>
+					<input type="hidden" name="name2" value="folderlist"/>
+					<input type="hidden" name="command3" value="view"/>
+					<input type="hidden" name="class3" value="folder"/>
+					<input type="hidden" name="id3">
+						<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
+					</input>
+					<input type="hidden" name="depth3" value="1"/>
+					<input type="hidden" name="name3" value="threadlist"/>
+					<input type="hidden" name="folder">
+						<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
+					</input>
+				</form>
+			</tr>
+			<tr>
+				<td colspan="3"><hr/></td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					To move this thread, select where you want it to be below:
+					<xsl:for-each select="//Display[@name='folderlist']">
+						<xsl:call-template name="folderlist"/>
+					</xsl:for-each>
+				</td>
+			</tr>
+		</table>
 	</xsl:template>
 			
 	<xsl:template match="Display[@name='fileupload']//Message">
