@@ -549,7 +549,14 @@
 			{
 				$command['class']="folder";
 				$command['id']=$boardinfo['rootfolder'];
-				$command['folderdepth']=-1;
+				if (!isset($command['folderdepth']))
+				{
+					$command['folderdepth']=-1;
+				}
+			}
+			else if (!isset($command['folderdepth']))
+			{
+				$command['folderdepth']=0;
 			}
 			$xml->setAttributes($command);
 			if (isset($command['id']))

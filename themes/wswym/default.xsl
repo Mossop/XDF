@@ -72,11 +72,10 @@
 	</xsl:template>
 	
 	<xsl:template match="Display[@name='threadlist']">
-		<xsl:apply-templates select="Folder" mode="threadlist"/>
+		<xsl:apply-templates select="Folder[@id=@id]" mode="threadlist"/>
 	</xsl:template>
 			
 	<xsl:template match="Folder" mode="threadlist">
-		<xsl:if test="/DisplaySet/@folder=@id">
 
 			<td width="578" valign="top">
 				<table border="0">
@@ -167,12 +166,6 @@
 					</tr>
 				</table>
 			</td>
-			
-		</xsl:if>
-
-		<xsl:if test="not(/DisplaySet/@folder=@id)">
-			<xsl:apply-templates select="Folder" mode="threadlist"/>
-		</xsl:if>
 
 	</xsl:template>
 	
