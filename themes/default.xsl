@@ -7,6 +7,7 @@
 	<xsl:param name="folder"/>
 
 	<xsl:include href="template.xsl"/>
+	<xsl:include href="functions.xsl"/>	
 	
 	<xsl:template match="Date">
 		<xsl:value-of select="format-number(@hour,'0')"/>
