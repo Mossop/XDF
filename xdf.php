@@ -7,6 +7,7 @@
 	# by the display pages.
 
 	$locks=0;
+	$queries=0;
 
 	# Sends the header to the browser.
   function send_http_header()
@@ -108,23 +109,159 @@
 		}
 	}
 	
-	function can_perform_command($class,$command,$user="")
+	function can_view($class, $id="")
+	{
+		global $usergrptbl,$loginid,$userinfo,$msgtbl,$filetbl,$logintbl,$persontbl;
+		
+		$realclass=$class;
+		if (($class=="thread")||($class=="file"))
+		{
+			$realclass=$class;
+			$class="message";
+		}
+		
+		db_lock(array($usergrptbl => 'READ'));
+		$query=db_query("SELECT user FROM $usergrptbl WHERE user=\"$loginid\" AND ".
+			"(group_id=\"admin\" OR group_id=\"".$class."admin\" OR group_id=\"".$class."view\");");
+		db_unlock();
+		if (mysql_num_rows($query)>0)
+		{
+			return true;
+		}
+		else if (strlen($id)>0)
+		{
+			if (($realclass=="thread")||($realclass=="message"))
+			{
+				$table=get_table_for_class($realclass);
+				db_lock(array($table => 'READ'));
+				$query=db_query("SELECT owner FROM $table WHERE id=$id AND owner=".$userinfo['id'].";");
+				db_unlock();
+				return (mysql_num_rows($query)>0);
+			}
+			else if ($realclass=="file")
+			{
+				db_lock(array($msgtbl => 'READ', $filetbl => 'READ'));
+				$query=db_query("SELECT owner FROM $msgtbl,$filetbl WHERE $filetbl.id=$id AND ".
+					"message=$msgtbl.id AND owner=".$userinfo['id'].";");
+				db_unlock();
+				return (mysql_num_rows($query)>0);
+			}
+			else if ($class=="login")
+			{
+				if ($loginid==$id)
+				{
+					return true;
+				}
+				else
+				{
+					db_lock(array($logintbl => 'READ'));
+					$query=db_query("SELECT id FROM $logintbl WHERE id='$id' AND person=".$userinfo['id'].";");
+					db_unlock();
+					return (mysql_num_rows($query)>0);
+				}
+			}
+			else if ($class=="person")
+			{
+				return ($id==$userinfo['id']);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function can_add($class)
 	{
 		global $usergrptbl,$loginid;
-		if (strlen($user)==0)
+
+		$realclass=$class;
+		if (($class=="thread")||($class=="file"))
 		{
-			$user=$loginid;
-		}		
+			$realclass=$class;
+			$class="message";
+		}
+		
 		db_lock(array($usergrptbl => 'READ'));
-		$query=db_query("SELECT user_id FROM $usergrptbl WHERE user=\"$user\" AND ".
-			"(group_id=\"admin\" OR group_id=\"".$class."admin\" OR group_id=\"".$class.$command."\");");
+		$query=db_query("SELECT user FROM $usergrptbl WHERE user=\"$loginid\" AND ".
+			"(group_id=\"admin\" OR group_id=\"".$class."add\");");
 		db_unlock();
 		return (mysql_num_rows($query)>0);
 	}
 	
+	function can_edit($class,$id="")
+	{
+		global $usergrptbl,$loginid,$userinfo,$msgtbl,$filetbl,$logintbl,$persontbl;
+
+		$realclass=$class;
+		if (($class=="thread")||($class=="file"))
+		{
+			$realclass=$class;
+			$class="message";
+		}
+		
+		db_lock(array($usergrptbl => 'READ'));
+		$query=db_query("SELECT user FROM $usergrptbl WHERE user=\"$loginid\" AND ".
+			"(group_id=\"admin\" OR group_id=\"".$class."admin\");");
+		db_unlock();
+		if (mysql_num_rows($query)>0)
+		{
+			return true;
+		}
+		else if (strlen($id)>0)
+		{
+			if (($realclass=="thread")||($realclass=="message"))
+			{
+				$table=get_table_for_class($realclass);
+				db_lock(array($table => 'READ'));
+				$query=db_query("SELECT owner FROM $table WHERE id=$id AND owner=".$userinfo['id'].";");
+				db_unlock();
+				return (mysql_num_rows($query)>0);
+			}
+			else if ($realclass=="file")
+			{
+				db_lock(array($msgtbl => 'READ', $filetbl => 'READ'));
+				$query=db_query("SELECT owner FROM $msgtbl,$filetbl WHERE $filetbl.id=$id AND ".
+					"message=$msgtbl.id AND owner=".$userinfo['id'].";");
+				db_unlock();
+				return (mysql_num_rows($query)>0);
+			}
+			else if ($class=="login")
+			{
+				if ($loginid==$id)
+				{
+					return true;
+				}
+				else
+				{
+					db_lock(array($logintbl => 'READ'));
+					$query=db_query("SELECT id FROM $logintbl WHERE id=$id AND person=".$userinfo['id'].";");
+					db_unlock();
+					return (mysql_num_rows($query)>0);
+				}
+			}
+			else if ($class=="person")
+			{
+				return ($id==$userinfo['id']);
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	function get_table_for_class($class)
 	{
-		global $boardtbl,$foldertbl,$threadrbl,$msgtbl,$filetbl,$logintbl,$persontbl;
+		global $boardtbl,$foldertbl,$threadtbl,$msgtbl,$filetbl,$logintbl,$persontbl;
 		
 		if ($class=="board")
 		{
@@ -233,7 +370,7 @@
 	
 	function db_query($sql)
 	{
-		global $connection,$locks;
+		global $connection,$locks,$queries;
 		
 		if ($locks<=0)
 		{
@@ -241,6 +378,7 @@
 		}
 		#print ($sql."<br>\n");
 		$query=mysql_query($sql,$connection);
+		$queries++;
 		if ($query==null)
 		{
 			print ("Error runnng query $sql<br>");

@@ -36,7 +36,7 @@
 			}
 			else
 			{
-				print ("Error adding $element to ".$this->type);
+				#print ("Error adding $element to ".$this->type);
 			}
 		}
 		
