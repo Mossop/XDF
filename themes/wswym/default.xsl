@@ -81,7 +81,10 @@
 						</td>
 						<td valign="top" align="right">
 							<xsl:if test="$folderadmin=1">
-								Administration
+								<a>
+									<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="@id"/>&amp;name2=folderedit&amp;folder=<xsl:value-of select="@id"/>&amp;stylesheet=edit</xsl:attribute>
+									Administration
+								</a>
 							</xsl:if>
 						</td>
 					</tr>
