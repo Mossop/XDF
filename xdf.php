@@ -430,7 +430,7 @@
 					
 					if ($continue)
 					{
-						header("Content-Type: text/xml");
+						header("Content-Type: text/plain");
 						print ($xml->toString());
 					}
 					else

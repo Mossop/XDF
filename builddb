@@ -1,0 +1,4 @@
+#! /bin/sh
+
+cat tables.sql | mysql -u xdf -pxdf379 xdf
+cat translate.sql | mysql -u root -p PhpBoard

@@ -102,7 +102,7 @@
 
 		function toString()
 		{
-			$content="<?xml version=\"1.0\"?>\n\n";
+			$content="?xml version=\"1.0\"?\n\n";
 			$content=$content.$this->root->toString();
 			return $content;
 		}
