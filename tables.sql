@@ -19,7 +19,7 @@ CREATE TABLE Board (
 
 CREATE TABLE Login (
 	id		VARCHAR(15) NOT NULL,
-	password	CHAR(16),
+	password	CHAR(16) NOT NULL,
 	board		VARCHAR(8) NOT NULL,
 	lastaccess	DATETIME,
 	person		INTEGER NOT NULL,
@@ -48,24 +48,24 @@ CREATE TABLE UserGroup (
 
 CREATE TABLE Folder (
 	id		INTEGER AUTO_INCREMENT NOT NULL,
-	parent		INTEGER,
+	parent		INTEGER NOT NULL,
 	name		VARCHAR(50),
 	PRIMARY KEY (id)
 );
 
 CREATE TABLE Thread (
 	id		INTEGER AUTO_INCREMENT NOT NULL,
-	folder		INTEGER,
+	folder		INTEGER NOT NULL,
 	name		VARCHAR(40),
 	created		DATETIME,
-	owner		INTEGER,
+	owner		INTEGER NOT NULL,
 	PRIMARY KEY (id)
 );
 
 CREATE TABLE Message (
 	id		INTEGER AUTO_INCREMENT NOT NULL,
-	thread		INTEGER,
-	author		INTEGER,
+	thread		INTEGER NOT NULL,
+	owner		INTEGER NOT NULL,
 	created		DATETIME,
 	content		TEXT,
 	PRIMARY KEY (id)
@@ -75,7 +75,7 @@ CREATE TABLE File (
 	id		INTEGER AUTO_INCREMENT NOT NULL,
 	name		VARCHAR(30) NOT NULL,
 	filename	VARCHAR(30),
-	message		INTEGER,
+	message		INTEGER NOT NULL,
 	description	VARCHAR(30),
 	mimetype	VARCHAR(30),
 	PRIMARY KEY (id)
