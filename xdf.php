@@ -122,31 +122,33 @@
 	
 	function get_table_for_class($class)
 	{
-		if ($class="board")
+		global $boardtbl,$foldertbl,$threadrbl,$msgtbl,$filetbl,$logintbl,$persontbl;
+		
+		if ($class=="board")
 		{
 			return $boardtbl;
 		}
-		else if ($class="folder")
+		else if ($class=="folder")
 		{
 			return $foldertbl;
 		}
-		else if ($class="thread")
+		else if ($class=="thread")
 		{
-			return $thread;
+			return $threadtbl;
 		}
-		else if ($class="message")
+		else if ($class=="message")
 		{
 			return $msgtbl;
 		}
-		else if ($class="file")
+		else if ($class=="file")
 		{
 			return $filetbl;
 		}
-		else if ($class="login")
+		else if ($class=="login")
 		{
 			return $logintbl;
 		}
-		else if ($class="person")
+		else if ($class=="person")
 		{
 			return $persontbl;
 		}
@@ -217,11 +219,13 @@
 	{
 		global $connection;
 		
+		print ($sql."<br>");
 		$query=mysql_query($sql,$connection);
 		if ($query==null)
 		{
 			print ("Error runnng query $sql<br>");
 			print (mysql_error()."<br>");
+			return false;
 		}
 		return $query;
 	}
