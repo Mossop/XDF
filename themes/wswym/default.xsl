@@ -213,7 +213,8 @@
 																</td>
 																<td>|</td>
 																<td valign="middle">
-																	<a href="">
+																	<a>
+																		<xsl:attribute name="href">xdf.php?command1=delete&amp;class1=message&amp;id1=<xsl:value-of select="@id"/>&amp;command2=view&amp;class2=board&amp;name2=folderlist&amp;command3=view&amp;class3=thread&amp;id3=<xsl:value-of select="../@id"/>&amp;depth3=2&amp;name3=messagelist&amp;folder=<xsl:value-of select="../../@folder"/></xsl:attribute>
 																		<img align="middle" src="images/delete.gif"/>
 																		Delete
 																	</a>

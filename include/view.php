@@ -395,7 +395,7 @@
 				if ($depth!=0)
 				{
 					db_lock(array($msgtbl => 'READ'));
-					$query=db_query("SELECT id FROM $msgtbl WHERE thread=$id;");
+					$query=db_query("SELECT id FROM $msgtbl WHERE thread=$id ORDER BY created;");
 					db_unlock();
 					while ($subid=mysql_fetch_array($query))
 					{
@@ -477,7 +477,7 @@
 				if ($depth!=0)
 				{
 					db_lock(array($threadtbl => 'READ'));
-					$query=db_query("SELECT id FROM $threadtbl WHERE folder=$id;");
+					$query=db_query("SELECT id FROM $threadtbl WHERE folder=$id ORDER BY created;");
 					db_unlock();
 					while ($subid=mysql_fetch_array($query))
 					{

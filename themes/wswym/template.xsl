@@ -169,6 +169,9 @@
 								<tr>
 									<td width="200" valign="top">
 										<xsl:apply-templates select="Display[@name='folderlist']"/>
+										<hr/>
+										Change Password<br/>
+										Logout<br/>
 									</td>
 									<td width="578" valign="top">
 										<xsl:apply-templates select="Display[@name!='folderlist']"/>

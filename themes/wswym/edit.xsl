@@ -108,6 +108,21 @@
 						</input>
 					</form>
 				</tr>
+				<xsl:if test="count(ancestor::Folder) &gt; 0">
+					<tr>
+						<td colspan="3"><hr/></td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							To move this folder, select where you want it to be below:
+							<xsl:for-each select="//Display[@name='folderlist']">
+								<xsl:call-template name="folderlist">
+									<xsl:with-param name="ignore" select="$folder"/>
+								</xsl:call-template>
+							</xsl:for-each>
+						</td>
+					</tr>
+				</xsl:if>
 			</table>
 		</xsl:for-each>
 	</xsl:template>

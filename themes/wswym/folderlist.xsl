@@ -7,7 +7,7 @@
 	<xsl:output method="html" omit-xml-declaration="yes" encoding="iso-8859-1" indent="yes"/>
 
   <xsl:template name="maxdepth">
-    <xsl:for-each select="//Folder"> <!-- sorry everyone! -->
+    <xsl:for-each select="//Folder">
       <xsl:sort select="count(ancestor::Folder)" order="descending"/>
       <xsl:if test="position()=1">
         <xsl:value-of select="count(ancestor::Folder)"/>
@@ -25,10 +25,8 @@
 			<xsl:apply-templates select="Folder" mode="folderlist">
 				<xsl:sort select="@name"/>
 				<xsl:with-param name="span" select="$maxdepth + 1"/>
+				<xsl:with-param name="ignore" select="$ignore"/>
 			</xsl:apply-templates>
-			<tr><td><xsl:attribute name="colspan"><xsl:value-of select="$maxdepth+2"/></xsl:attribute><hr/></td></tr>
-			<tr><td><xsl:attribute name="colspan"><xsl:value-of select="$maxdepth+2"/></xsl:attribute>Change Password</td></tr>
-			<tr><td><xsl:attribute name="colspan"><xsl:value-of select="$maxdepth+2"/></xsl:attribute>Logout</td></tr>
 		</table>
 	</xsl:template>
 
