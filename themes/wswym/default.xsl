@@ -24,12 +24,68 @@
 					<tr>
 						<td><xsl:value-of select="@id"/></td>
 						<td><xsl:apply-templates select="Date"/></td>
-						<td><xsl:value-of select="Person/@fullname"/></td>
+						<td>
+							<a>
+								<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=person&amp;id2=<xsl:value-of select="Person/@id"/>&amp;name2=personview&amp;depth2=1</xsl:attribute>
+								<xsl:value-of select="Person/@fullname"/>
+							</a>
+						</td>
 					</tr>
 				</xsl:for-each>
 			</table>
 	</xsl:template>
 
+	<xsl:template match="Display[@name='personview']">
+		<xsl:for-each select="People/Person">
+			<table border="0">
+				<tr>
+					<td><h1>Viewing <xsl:value-of select="@fullname"/></h1></td>
+				</tr>
+				<tr>
+					<td><b>Nickname:</b></td>
+					<td><xsl:value-of select="@nickname"/></td>
+				</tr>
+				<tr>
+					<td><b>E-mail:</b></td>
+					<td>
+						<a>
+							<xsl:attribute name="href">mailto:<xsl:value-of select="@email"/></xsl:attribute>
+							<xsl:value-of select="@email"/>
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td><b>Home Phone:</b></td>
+					<td><xsl:value-of select="@homephone"/></td>
+				</tr>
+				<tr>
+					<td><b>Mobile Phone:</b></td>
+					<td><xsl:value-of select="@mobilephone"/></td>
+				</tr>
+				<tr>
+					<td><b>Work Phone:</b></td>
+					<td><xsl:value-of select="@workphone"/></td>
+				</tr>
+				<tr>
+					<td><b>Fax:</b></td>
+					<td><xsl:value-of select="@fax"/></td>
+				</tr>
+				<xsl:if test="$personadmin=1">
+					<xsl:if test="count(Login)=0">
+						<tr>
+							<td colspan="2">
+								<hr/>
+							</td>
+						</tr>
+						<tr>
+							<td>Boo!</td>
+						</tr>
+					</xsl:if>
+				</xsl:if>
+			</table>
+		</xsl:for-each>
+	</xsl:template>
+	
 	<xsl:template match="Display[@name='peoplelist']">
 			<table border="0">
 				<tr>
@@ -44,7 +100,12 @@
 				</tr>
 				<xsl:for-each select="People/Person">
 					<tr>
-						<td><xsl:value-of select="@fullname"/></td>
+						<td>
+							<a>
+								<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=person&amp;id2=<xsl:value-of select="@id"/>&amp;name2=personview&amp;depth2=1</xsl:attribute>
+								<xsl:value-of select="@fullname"/>
+							</a>
+						</td>
 						<td>
 							<a>
 								<xsl:attribute name="href">mailto:<xsl:value-of select="@email"/></xsl:attribute>
