@@ -194,15 +194,32 @@
 											</xsl:call-template>
 										</td>
 									</tr>
-									<tr>
-										<td class="messagebody">
-											<hr/>
-											Attachments:
-											<table>
-												<xsl:for-each select="File"/>
-											</table>
-										</td>
-									</tr>
+									<xsl:if test="count(File) &gt; 0">
+										<tr>
+											<td class="messagebody">
+												<hr/>
+												Attachments:
+												<table>
+													<xsl:for-each select="File">
+														<tr>
+															<td width="20">
+																<xsl:value-of select="position()"/>:
+															</td>
+															<td width="400">
+																<xsl:value-of select="@description"/>
+															</td>
+															<td align="right" width="158">
+																<a>
+																	<xsl:attribute name="href">xdf.php?command=downloadfile&amp;file=<xsl:value-of select="@id"/></xsl:attribute>
+																	<xsl:value-of select="@filename"/>
+																</a>
+															</td>
+														</tr>
+													</xsl:for-each>
+												</table>
+											</td>
+										</tr>
+									</xsl:if>
 								</table>
 								<br/>
 							</xsl:for-each>
