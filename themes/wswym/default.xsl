@@ -72,7 +72,8 @@
 	</xsl:template>
 	
 	<xsl:template match="Display[@name='threadlist']">
-		<xsl:apply-templates select="Folder[@id=@id]" mode="threadlist"/>
+		<xsl:variable name="folder" select="@id"/>
+		<xsl:apply-templates select="descendant::Folder[@id=$folder]" mode="threadlist"/>
 	</xsl:template>
 			
 	<xsl:template match="Folder" mode="threadlist">
@@ -84,6 +85,9 @@
 							<h1><xsl:value-of select="@name"/> Messages</h1>
 						</td>
 						<td valign="top" align="right">
+							<xsl:if test="$folderadmin=1">
+								Administration
+							</xsl:if>
 						</td>
 					</tr>
 					<tr>
@@ -174,12 +178,17 @@
 			<td width="578" valign="top">
 				<table>
 					<tr>
-						<td>
+						<td valign="top">
 							<h1>Messages in the thread &quot;<xsl:value-of select="@name"/>&quot;</h1>
+						</td>
+						<td valign="top" align="right">
+							<xsl:if test="$messageadmin=1">
+								Administration
+							</xsl:if>
 						</td>
 					</tr>
 					<tr width="578">
-						<td align="center">
+						<td align="center" colspan="2">
 							<xsl:for-each select="Message">
 								<xsl:call-template name="window">
 									<xsl:with-param name="header">
@@ -260,12 +269,12 @@
 					</tr>
 					<xsl:if test="$messageadd=1">
 						<tr>
-							<td>
+							<td colspan="2">
 								<hr/>
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td colspan="2">
 								<h2>Add a new reply to this thread:</h2>
 								<form action="xdf.php" method="post">
 									<input type="hidden" name="command1" value="add"/>
