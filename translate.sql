@@ -2,7 +2,7 @@ insert into xdf.Folder (id,parent,name) select id,parent,name from Folder where 
 insert into xdf.Folder (parent,name) select -1,name from Board;
 update xdf.Folder set parent=LAST_INSERT_ID() where parent=0;
 
-insert into xdf.Board (id,rootfolder,timeout) select id,LAST_INSERT_ID(),timeout from Board where id="wswym";
+insert into xdf.Board (id,rootfolder,timeout,defaulttheme) select id,LAST_INSERT_ID(),timeout,"wswym" from Board where id="wswym";
 
 insert into xdf.Thread (id,folder,name,owner,created) select id,folder,name,owner,created from Thread where board="wswym";
 update xdf.Thread set folder=LAST_INSERT_ID() where folder=0;
@@ -32,3 +32,7 @@ insert into xdf.Groups
 ("loginview");
 
 insert into xdf.UserGroup (user,group_id) values ('dave','admin');
+
+insert into xdf.Theme
+(id,name) values
+('wswym','Snazzy theme');

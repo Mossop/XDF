@@ -397,7 +397,7 @@
 		global $boardtbl,$foldertbl,$board;
 		
 		db_lock(array($boardtbl => 'READ',$foldertbl => 'READ'));
-		$query=db_query("SELECT $boardtbl.id,name,rootfolder FROM ".
+		$query=db_query("SELECT $boardtbl.id,name,rootfolder,defaulttheme FROM ".
 			"$boardtbl,$foldertbl WHERE $boardtbl.id=\"$board\" AND rootfolder=$foldertbl.id;");
 		db_unlock();
 	
@@ -590,6 +590,17 @@
 						else
 						{
 							$stylesheet="default";
+						}
+						db_lock(array($logintbl => 'READ'));
+						$query=db_query("SELECT theme FROM $logintbl WHERE id='$loginid';");
+						$gettheme=mysql_fetch_array($query);
+						if ($gettheme['theme']==null)
+						{
+							$stylesheet=$boardinfo['defaulttheme'].'/'.$stylesheet;
+						}
+						else
+						{
+							$stylesheet=$gettheme['theme'].'/'.$stylesheet;
 						}
 						$xh=xslt_create();
 						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString()),$othercommands));

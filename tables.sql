@@ -14,6 +14,14 @@ CREATE TABLE Board (
 	id		VARCHAR(8) NOT NULL,
 	rootfolder	INTEGER NOT NULL,
 	timeout		INTEGER,
+	defaulttheme	VARCHAR(20),
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE Theme (
+	id		VARCHAR(20) NOT NULL,
+	name		VARCHAR(30),
+	description	TEXT,
 	PRIMARY KEY (id)
 );
 
@@ -22,6 +30,7 @@ CREATE TABLE Login (
 	password	CHAR(16) NOT NULL,
 	board		VARCHAR(8) NOT NULL,
 	lastaccess	DATETIME,
+	theme		VARCHAR(20),
 	person		INTEGER NOT NULL,
 	PRIMARY KEY (id)
 );
