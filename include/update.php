@@ -42,6 +42,7 @@
 				{
 					if (db_query($sql))
 					{
+						db_unlock();
 						if (($command['class']=="message")&&(mysql_affected_rows()>0))
 						{
 							db_lock(array($unreadtbl => 'WRITE',$logintbl => 'READ', $editedtbl => 'WRITE'));
@@ -50,8 +51,8 @@
 							db_query("INSERT INTO $unreadtbl (person,message) "
 								."SELECT DISTINCT person,".$command['id']." FROM "
 								."$logintbl WHERE board=\"$board\" AND person!=\"".$userinfo['id']."\";");
+							db_unlock();
 						}
-						db_unlock();
 						return true;
 					}
 					else

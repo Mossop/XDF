@@ -206,7 +206,8 @@
 																</td>
 																<td>|</td>
 																<td valign="middle">
-																	<a href="">
+																	<a>
+																		<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=message&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=0&amp;name2=messageedit&amp;folder=<xsl:value-of select="../../@folder"/>&amp;stylesheet=edit</xsl:attribute>
 																		<img align="middle" src="images/edit.gif"/>
 																		Edit
 																	</a>

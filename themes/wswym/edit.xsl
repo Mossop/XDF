@@ -15,7 +15,40 @@
 	<xsl:template match="Display[@name='threadedit']">
 	</xsl:template>
 			
-	<xsl:template match="Display[@name='messageedit']">
+	<xsl:template match="Display[@name='messageedit']//Message">
+		<h2>Edit message:</h2>
+		<form action="xdf.php" method="post">
+			<input type="hidden" name="command1" value="update"/>
+			<input type="hidden" name="class1" value="message"/>
+			<input type="hidden" name="id1">
+				<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+			</input>
+			<table>
+				<tr>
+					<td>
+						<textarea name="content1" rows="15" cols="60"><xsl:value-of select="Text[@name='content']"/></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<input type="submit" value="Update"/>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="command2" value="view"/>
+			<input type="hidden" name="class2" value="board"/>
+			<input type="hidden" name="name2" value="folderlist"/>
+			<input type="hidden" name="command3" value="view"/>
+			<input type="hidden" name="class3" value="thread"/>
+			<input type="hidden" name="id3">
+				<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
+			</input>
+			<input type="hidden" name="depth3" value="2"/>
+			<input type="hidden" name="name3" value="messagelist"/>
+			<input type="hidden" name="folder">
+				<xsl:attribute name="value"><xsl:value-of select="../../@id"/></xsl:attribute>
+			</input>
+		</form>
 	</xsl:template>
 
 	<xsl:template match="Display[@name='folderedit']">
