@@ -16,6 +16,11 @@
 		header("Pragma: no-cache");
   }
 	
+	function openSession()
+	{
+		session_start();
+	}
+	
 	function isSessionVariable($name)
 	{
 		return isset($_SESSION[$name]);
@@ -38,6 +43,17 @@
 		$_SESSION[$name]=$value;
 	}
 
+	function unsetSessionVariable($name)
+	{
+		unset($_SESSION[$name]);
+	}
+	
+	function closeSession()
+	{
+		$_SESSION=array();
+		session_destroy();
+	}
+	
 	# Converts a timestamp to a nice display date.
 	function to_nice_date($timestamp)
 	{
@@ -69,6 +85,77 @@
 		return to_nice_date(from_mysql_date($datestr));
 	}
 	
+	# Asks if the current user is in the specified group.
+	function is_in_group($group, $user="")
+	{
+		global $usergrptbl,$loginid;
+		if (strlen($user)==0)
+		{
+			$user=$loginid;
+		}
+		db_lock(array($usergrptbl => 'READ'));
+		$query=db_query("SELECT user_id FROM $usergrptbl WHERE user=\"$user\" AND (group_id=\"$group\" OR group_id=\"admin\");");
+		db_unlock();
+		if (mysql_num_rows($query)>0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	function can_perform_command($class,$command,$user="")
+	{
+		global $usergrptbl,$loginid;
+		if (strlen($user)==0)
+		{
+			$user=$loginid;
+		}		
+		db_lock(array($usergrptbl => 'READ'));
+		$query=db_query("SELECT user_id FROM $usergrptbl WHERE user=\"$user\" AND ".
+			"(group_id=\"admin\" OR group_id=\"".$class."admin\" OR group_id=\"".$class.$command."\");");
+		db_unlock();
+		return (mysql_num_rows($query)>0);
+	}
+	
+	function get_table_for_class($class)
+	{
+		if ($class="board")
+		{
+			return $boardtbl;
+		}
+		else if ($class="folder")
+		{
+			return $foldertbl;
+		}
+		else if ($class="thread")
+		{
+			return $thread;
+		}
+		else if ($class="message")
+		{
+			return $msgtbl;
+		}
+		else if ($class="file")
+		{
+			return $filetbl;
+		}
+		else if ($class="login")
+		{
+			return $logintbl;
+		}
+		else if ($class="person")
+		{
+			return $persontbl;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 	# Check the login credentials and present with login pages if necessary.
 	#
 	# Returns true if everything is ok to continue.
@@ -86,7 +173,9 @@
 			if ((isset($username))&&(isset($password)))
 			{
 				$username=strtolower($username);
+				db_lock(array($logintbl => 'READ'));
 				$query=db_query("SELECT id FROM $logintbl WHERE id=\"$username\" AND password=PASSWORD(\"$password\") AND board=\"$board\";");
+				db_unlock();
 				if (mysql_num_rows($query)==1)
 				{
 					#print ("New login");
@@ -108,6 +197,22 @@
 		}
 	}
 	
+	function db_lock($tables)
+	{
+		$sql="";
+		while (list($table,$lock)=each($tables))
+		{
+			$sql=$sql."$table $lock,";
+		}
+		$sql=substr($sql,0,-1);
+		db_query("LOCK TABLES $sql;");
+	}
+	
+	function db_unlock()
+	{
+		db_query("UNLOCK TABLES;");
+	}
+	
 	function db_query($sql)
 	{
 		global $connection;
@@ -127,8 +232,12 @@
 	
 	function get_board_info()
 	{
+		global $boardtbl,$foldertbl;
+		
+		db_lock(array($boardtbl => 'READ',$foldertbl => 'READ'));
 		$query=db_query("SELECT $boardtbl.id,timeout,name,rootfolder FROM ".
 			"$boardtbl,$foldertbl WHERE $boardtbl.id=\"$board\" AND rootfolder=$foldertbl.id;");
+		db_unlock();
 	
 		if ($boardinfo=mysql_fetch_array($query))
 		{
@@ -140,6 +249,7 @@
 		}
 	}
 	
+	# Include the main functions.
 	include "include/view.php";
 	include "include/add.php";
 	include "include/update.php";
@@ -167,6 +277,11 @@
 		{
 			return process_delete_command($number,$command);
 		}
+		else if ($command['command']=="logout")
+		{
+			closeSession();
+			return false;
+		}
 		else
 		{
 			return false;
@@ -176,7 +291,7 @@
 	# Load the board information
   include "init.php";
 
-	session_start();
+	openSession();
 	
 	send_http_header();
 
@@ -202,9 +317,11 @@
 			if ($loginid!=null)
 			{
 				# Update the users last access.
+				db_lock(array($logintbl => 'WRITE',$persontbl => 'READ'));
 				db_query("UPDATE $logintbl SET lastaccess=NOW() WHERE id=\"$loginid\" AND board=\"$board\";");
 				$query=db_query("SELECT $persontbl.* FROM $persontbl,$logintbl WHERE $logintbl.person=$persontbl.id AND $logintbl.id=\"$loginid\" AND $logintbl.board=\"$board\";");
 				$userinfo=mysql_fetch_array($query);
+				db_unlock();
 				
 				$max=0;
 				if ($_SERVER['REQUEST_METHOD']=='GET')
@@ -219,51 +336,61 @@
 				{
 					$http_vars=array();
 				}
-			
-				while (list($key,$val)=each($http_vars))
-				{
-					if (ereg("([_a-zA-Z]+)([0-9]+)",$key,$regs))
-					{
-						if (isset($command[$regs[2]]))
-						{
-							$thiscommand=&$command[$regs[2]];
-							$thiscommand[$regs[1]]=$val;
-						}
-						else
-						{
-							$command[$regs[2]]=array($regs[1] => $val);
-						}
-						if ($max<$regs[2])
-						{
-							$max=$regs[2];
-						}
-					}
-				}
 				
-				$loop=0;
-				$continue=true;
-				while (($loop<=$max)&&($continue))
+				if (isset($http_vars['command']))
 				{
-					if (isset($command[$loop]))
+					if ($http_vars['command']=="downloadfile")
 					{
-						$continue=process_command($loop,$command[$loop]);
 					}
-					$loop++;
-				}
-				
-				if ($continue)
-				{
-					print ("Success");
 				}
 				else
 				{
-					print ("Failed");
+					while (list($key,$val)=each($http_vars))
+					{
+						if (ereg("([_a-zA-Z]+)([0-9]+)",$key,$regs))
+						{
+							if (isset($command[$regs[2]]))
+							{
+								$thiscommand=&$command[$regs[2]];
+								$thiscommand[$regs[1]]=$val;
+							}
+							else
+							{
+								$command[$regs[2]]=array($regs[1] => $val);
+							}
+							if ($max<$regs[2])
+							{
+								$max=$regs[2];
+							}
+						}
+					}
+					
+					$loop=0;
+					$continue=true;
+					while (($loop<=$max)&&($continue))
+					{
+						if (isset($command[$loop]))
+						{
+							$continue=process_command($loop,$command[$loop]);
+						}
+						$loop++;
+					}
+				
+					if ($continue)
+					{
+						print ("Success");
+					}
+					else
+					{
+						print ("Failed");
+					}
 				}
 			}
 			else
 			{
 				print ("Eeek an intruder!");
 			}
+			db_unlock();
 		}
 		else
 		{
