@@ -25,46 +25,51 @@
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=\"$id\";");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
-		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+		if ($info=mysql_fetch_array($query))
+		{	
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
+					
+			if ($depth!=0)
 			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
+				db_lock(array($usergrptbl => 'READ'));
+				$query=db_query("SELECT user FROM $usergrptbl WHERE group_id=\"$id\";");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getLoginElement($subid['user'],$depth-1));
+				}
 			}
-			else
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
+			
+			return $xml;
 		}
-				
-		if ($depth!=0)
+		else
 		{
-			db_lock(array($usergrptbl => 'READ'));
-			$query=db_query("SELECT user FROM $usergrptbl WHERE group_id=\"$id\";");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getLoginElement($subid['user'],$depth-1));
-			}
+			return false;
 		}
-		
-		return $xml;
 	}
 	
 	function getLoginElement($id,$depth)
@@ -78,50 +83,55 @@
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=\"$id\";");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
+		if ($info=mysql_fetch_array($query))
 		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else if ($name=="person")
+				{
+					$xml->addElement(getPersonElement($info[$loop],0));
+				}
+				else if (($name!="password")&&($name!="board"))
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
+					
+			if ($depth!=0)
 			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
+				db_lock(array($usergrptbl => 'READ'));
+				$query=db_query("SELECT group_id FROM $usergrptbl WHERE user=\"$id\";");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getGroupElement($subid['group_id'],$depth-1));
+				}
 			}
-			else if ($name=="person")
-			{
-				$xml->addElement(getPersonElement($info[$loop],0));
-			}
-			else if (($name!="password")&&($name!="board"))
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
+			
+			return $xml;
 		}
-				
-		if ($depth!=0)
+		else
 		{
-			db_lock(array($usergrptbl => 'READ'));
-			$query=db_query("SELECT group_id FROM $usergrptbl WHERE user=\"$id\";");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getGroupElement($subid['group_id'],$depth-1));
-			}
+			return false;
 		}
-		
-		return $xml;
 	}
 
 	function getPersonElement($id,$depth)
@@ -129,52 +139,57 @@
 		global $persontbl,$logintbl;
 		
 		$table=$persontbl;
-		
+			
 		$xml = new XmlElement;
 		$xml->setType("Person");
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=$id;");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
+		if ($info=mysql_fetch_array($query))
 		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
+					
+			if ($depth!=0)
 			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
+				db_lock(array($logintbl => 'READ'));
+				$query=db_query("SELECT id FROM $logintbl WHERE person=$id;");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getLoginElement($subid['id'],$depth-1));
+				}
 			}
-			else
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
+			
+			return $xml;
 		}
-				
-		if ($depth!=0)
+		else
 		{
-			db_lock(array($logintbl => 'READ'));
-			$query=db_query("SELECT id FROM $logintbl WHERE person=$id;");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getLoginElement($subid['id'],$depth-1));
-			}
+			return false;
 		}
-		
-		return $xml;
 	}
 	
 	function getFileElement($id)
@@ -188,39 +203,44 @@
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=$id;");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
+		if ($info=mysql_fetch_array($query))
 		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{	
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else if ($name=="owner")
+				{
+					$xml->addElement(getPersonElement($info[$loop],0));
+				}
+				else if ($name!="message")
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
-			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
-			}
-			else if ($name=="owner")
-			{
-				$xml->addElement(getPersonElement($info[$loop],0));
-			}
-			else if ($name!="message")
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
+					
+			return $xml;
 		}
-				
-		return $xml;
+		else
+		{
+			return false;
+		}
 	}
 	
 	function getMessageElement($id,$depth)
@@ -234,50 +254,55 @@
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=$id;");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
-		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+		if ($info=mysql_fetch_array($query))
+		{	
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else if ($name=="owner")
+				{
+					$xml->addElement(getPersonElement($info[$loop],0));
+				}
+				else if ($name!="thread")
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
+					
+			if ($depth!=0)
 			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
+				db_lock(array($filetbl => 'READ'));
+				$query=db_query("SELECT id FROM $filetbl WHERE message=$id;");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getFileElement($subid['id']));
+				}
 			}
-			else if ($name=="owner")
-			{
-				$xml->addElement(getPersonElement($info[$loop],0));
-			}
-			else if ($name!="thread")
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
+			
+			return $xml;
 		}
-				
-		if ($depth!=0)
+		else
 		{
-			db_lock(array($filetbl => 'READ'));
-			$query=db_query("SELECT id FROM $filetbl WHERE message=$id;");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getFileElement($subid['id']));
-			}
+			return false;
 		}
-		
-		return $xml;
 	}
 	
 	function getThreadElement($id,$depth)
@@ -291,50 +316,55 @@
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=$id;");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
+		if ($info=mysql_fetch_array($query))
 		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else if ($name=="owner")
+				{
+					$xml->addElement(getPersonElement($info[$loop],0));
+				}
+				else if ($name!="folder")
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
+					
+			if ($depth!=0)
 			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
-			}
-			else if ($name=="owner")
-			{
-				$xml->addElement(getPersonElement($info[$loop],0));
-			}
-			else if ($name!="folder")
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
+				db_lock(array($msgtbl => 'READ'));
+				$query=db_query("SELECT id FROM $msgtbl WHERE thread=$id;");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getMessageElement($subid['id'],$depth-1));
+				}	
+			}	
+			
+			return $xml;
 		}
-				
-		if ($depth!=0)
+		else
 		{
-			db_lock(array($msgtbl => 'READ'));
-			$query=db_query("SELECT id FROM $msgtbl WHERE thread=$id;");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getMessageElement($subid['id'],$depth-1));
-			}
+			return false;
 		}
-		
-		return $xml;
 	}
 	
 	function getFolderElement($id,$depth,$folderdepth)
@@ -348,61 +378,66 @@
 		
 		db_lock(array($table => 'READ'));
 		$query=db_query("SELECT * FROM $table WHERE id=$id;");
-		$info=mysql_fetch_array($query);
 		db_unlock();
-		
-		$fields=mysql_num_fields($query);
-		for ($loop=0; $loop<$fields; $loop++)
+		if ($info=mysql_fetch_array($query))
 		{
-			$name=mysql_field_name($query,$loop);
-			$type=mysql_field_type($query,$loop);
-			if ($type=="datetime")
+			$fields=mysql_num_fields($query);
+			for ($loop=0; $loop<$fields; $loop++)
 			{
-				$date=getDateElement(from_mysql_date($info[$loop]));
-				$date->setAttribute("name",$name);
-				$xml->addElement($date);
+				$name=mysql_field_name($query,$loop);
+				$type=mysql_field_type($query,$loop);
+				if ($type=="datetime")
+				{
+					$date=getDateElement(from_mysql_date($info[$loop]));
+					$date->setAttribute("name",$name);
+					$xml->addElement($date);
+				}
+				else if ($type=="blob")
+				{
+					$text = new XmlElement;
+					$text->setType("Text");
+					$text->setAttribute("name",$name);
+					$text->setContent($info[$loop]);
+					$xml->addElement($text);
+				}
+				else if ($name=="owner")
+				{
+					$xml->addElement(getPersonElement($info[$loop],0));
+				}
+				else if ($name!="parent")
+				{
+					$xml->setAttribute($name,$info[$loop]);
+				}
 			}
-			else if ($type=="blob")
+					
+			if ($folderdepth!=0)
 			{
-				$text = new XmlElement;
-				$text->setType("Text");
-				$text->setAttribute("name",$name);
-				$text->setContent($info[$loop]);
-				$xml->addElement($text);
+				db_lock(array($table => 'READ'));
+				$query=db_query("SELECT id FROM $table WHERE parent=$id;");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getFolderElement($subid['id'],$depth,$folderdepth-1));
+				}
 			}
-			else if ($name=="owner")
+			
+			if ($depth!=0)
 			{
-				$xml->addElement(getPersonElement($info[$loop],0));
+				db_lock(array($threadtbl => 'READ'));
+				$query=db_query("SELECT id FROM $threadtbl WHERE folder=$id;");
+				db_unlock();
+				while ($subid=mysql_fetch_array($query))
+				{
+					$xml->addElement(getThreadElement($subid['id'],$depth-1));
+				}
 			}
-			else if ($name!="parent")
-			{
-				$xml->setAttribute($name,$info[$loop]);
-			}
-		}
-				
-		if ($folderdepth!=0)
-		{
-			db_lock(array($table => 'READ'));
-			$query=db_query("SELECT id FROM $table WHERE parent=$id;");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getFolderElement($subid['id'],$depth,$folderdepth-1));
-			}
-		}
 		
-		if ($depth!=0)
-		{
-			db_lock(array($threadtbl => 'READ'));
-			$query=db_query("SELECT id FROM $threadtbl WHERE folder=$id;");
-			db_unlock();
-			while ($subid=mysql_fetch_array($query))
-			{
-				$xml->addElement(getThreadElement($subid['id'],$depth-1));
-			}
+			return $xml;
 		}
-		
-		return $xml;
+		else
+		{
+			return false;
+		}
 	}
 	
 	function build_folder_hierarchy($folder)
@@ -447,85 +482,98 @@
 			{
 				if ($command['class']=="person")
 				{
-					$list = new XmlElement;
-					$list->setType("People");
-					$xml->addElement($list);
-					$list->addElement(getPersonElement($command['id'],$command['depth']));
+					if ($person=getPersonElement($command['id'],$command['depth']))
+					{
+						$list = new XmlElement;
+						$list->setType("People");
+						$xml->addElement($list);
+						$list->addElement($person);
+					}
 				}
 				else if ($command['class']=="login")
 				{
-					$list = new XmlElement;
-					$list->setType("LoginInfo");
-					$xml->addElement($list);
-					$list->addElement(getLoginElement($command['id'],$command['depth']));
+					if ($login=getLoginElement($command['id'],$command['depth']))
+					{
+						$list = new XmlElement;
+						$list->setType("LoginInfo");
+						$xml->addElement($list);
+						$list->addElement($login);
+					}
 				}
 				else if ($command['class']=="group")
 				{
-					$list = new XmlElement;
-					$list->setType("LoginInfo");
-					$xml->addElement($list);
-					$list->addElement(getGroupElement($command['id'],$command['depth']));
+					if ($group=getGroupElement($command['id'],$command['depth']))
+					{
+						$list = new XmlElement;
+						$list->setType("LoginInfo");
+						$xml->addElement($list);
+						$list->addElement($group);
+					}
 				}
 				else if ($command['class']=="folder")
 				{
-					$folder=getFolderElement($command['id'],$command['depth'],$command['folderdepth']);
-
-					$xml->addElement(build_folder_hierarchy($folder));
+					if ($folder=getFolderElement($command['id'],$command['depth'],$command['folderdepth']))
+					{
+						$xml->addElement(build_folder_hierarchy($folder));
+					}
 				}
 				else if ($command['class']=="thread")
 				{
-					$thread=getThreadElement($command['id'],$command['depth']);
-
-					db_lock(array($threadtbl => 'READ'));
-					$query=db_query("select folder from $threadtbl WHERE $threadtbl.id=".$command['id'].";");
-					$info=mysql_fetch_array($query);
-					db_unlock();
-
-					$folder=getFolderElement($info['folder'],0,0);
-
-					$folder->addElement($thread);
-
-					$xml->addElement(build_folder_hierarchy($folder));
+					if ($thread=getThreadElement($command['id'],$command['depth']))
+					{
+						db_lock(array($threadtbl => 'READ'));
+						$query=db_query("select folder from $threadtbl WHERE $threadtbl.id=".$command['id'].";");
+						$info=mysql_fetch_array($query);
+						db_unlock();
+	
+						$folder=getFolderElement($info['folder'],0,0);
+	
+						$folder->addElement($thread);
+	
+						$xml->addElement(build_folder_hierarchy($folder));
+					}
 				}
 				else if ($command['class']=="message")
 				{
-					$message=getMessageElement($command['id'],$command['depth']);
-
-					db_lock(array($threadtbl => 'READ', $msgtbl => 'READ'));
-					$query=db_query("select folder, $threadtbl.id as thread ".
-						"from $threadtbl,$msgtbl WHERE ".
-						"$msgtbl.thread=$threadtbl.id AND $msgtbl.id=".$command['id'].";");
-					$info=mysql_fetch_array($query);
-					db_unlock();
-
-					$thread=getThreadElement($info['thread'],0);
-					$folder=getFolderElement($info['folder'],0,0);
-
-					$folder->addElement($thread);
-					$thread->addElement($message);
-
-					$xml->addElement(build_folder_hierarchy($folder));
+					if ($message=getMessageElement($command['id'],$command['depth']))
+					{
+						db_lock(array($threadtbl => 'READ', $msgtbl => 'READ'));
+						$query=db_query("select folder, $threadtbl.id as thread ".
+							"from $threadtbl,$msgtbl WHERE ".
+							"$msgtbl.thread=$threadtbl.id AND $msgtbl.id=".$command['id'].";");
+						$info=mysql_fetch_array($query);
+						db_unlock();
+	
+						$thread=getThreadElement($info['thread'],0);
+						$folder=getFolderElement($info['folder'],0,0);
+	
+						$folder->addElement($thread);
+						$thread->addElement($message);
+	
+						$xml->addElement(build_folder_hierarchy($folder));
+					}
 				}
 				else if ($command['class']=="file")
 				{
-					$file=getFileElement($command['id']);
-
-					db_lock(array($threadtbl => 'READ', $msgtbl => 'READ', $filetbl => 'READ'));
-					$query=db_query("select folder,$threadtbl.id as thread,$msgtbl.id as message ".
-						"from $threadtbl,$msgtbl,$filetbl WHERE ".
-						"$msgtbl.thread=$threadtbl.id AND $filetbl.message=$msgtbl.id AND $filetbl.id=".$command['id'].";");
-					$info=mysql_fetch_array($query);
-					db_unlock();
-
-					$message=getMessageElement($info['message'],0);
-					$thread=getThreadElement($info['thread'],0);
-					$folder=getFolderElement($info['folder'],0,0);
-
-					$folder->addElement($thread);
-					$thread->addElement($message);
-					$message->addElement($file);
-
-					$xml->addElement(build_folder_hierarchy($folder));
+					if ($file=getFileElement($command['id']))
+					{
+						db_lock(array($threadtbl => 'READ', $msgtbl => 'READ', $filetbl => 'READ'));
+						$query=db_query("select folder,$threadtbl.id as thread,$msgtbl.id as message ".
+							"from $threadtbl,$msgtbl,$filetbl WHERE ".
+							"$msgtbl.thread=$threadtbl.id AND $filetbl.message=$msgtbl.id AND $filetbl.id=".$command['id'].";");
+						$info=mysql_fetch_array($query);
+						db_unlock();
+	
+						$message=getMessageElement($info['message'],0);
+						$thread=getThreadElement($info['thread'],0);
+						$folder=getFolderElement($info['folder'],0,0);
+	
+						$folder->addElement($thread);
+						$thread->addElement($message);
+						$message->addElement($file);
+	
+						$xml->addElement(build_folder_hierarchy($folder));
+					}
 				}
 			}
 			else if ($command['class']=="people")

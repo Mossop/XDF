@@ -1,5 +1,5 @@
 insert into xdf.Folder (id,parent,name) select id,parent,name from Folder where board="wswym";
-insert into xdf.Folder (parent,name) select 0,name from Board;
+insert into xdf.Folder (parent,name) select -1,name from Board;
 update xdf.Folder set parent=LAST_INSERT_ID() where parent=0;
 
 insert into xdf.Board (id,rootfolder,timeout) select id,LAST_INSERT_ID(),timeout from Board where id="wswym";
