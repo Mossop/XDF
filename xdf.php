@@ -8,6 +8,7 @@
 
 	$locks=0;
 	$queries=0;
+	$querylog=fopen("queries.log","w");
 
 	# Sends the header to the browser.
   function send_http_header()
@@ -370,13 +371,14 @@
 	
 	function db_query($sql)
 	{
-		global $connection,$locks,$queries;
+		global $connection,$locks,$queries,$querylog;
 		
 		if ($locks<=0)
 		{
 			print ("Warning, querying without first locking - $sql<br>\n");
 		}
 		#print ($sql."<br>\n");
+		fwrite($querylog,$sql."\n");
 		$query=mysql_query($sql,$connection);
 		$queries++;
 		if ($query==null)
@@ -600,6 +602,7 @@
 						db_lock(array($logintbl => 'READ'));
 						$query=db_query("SELECT theme FROM $logintbl WHERE id='$loginid';");
 						$gettheme=mysql_fetch_array($query);
+						db_unlock();
 						if ($gettheme['theme']==null)
 						{
 							$stylesheet=$boardinfo['defaulttheme'].'/'.$stylesheet;
@@ -641,5 +644,6 @@
 		# Board wasn't specified
 		header("Location: badsetup.php");
 	}
+	fclose($querylog);
 
 ?>
