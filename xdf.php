@@ -140,14 +140,37 @@
 		}
 	}
 	
+	include "include/view.php";
+	include "include/add.php";
+	include "include/update.php";
+	include "include/delete.php";
+	
 	function process_command($number,$command)
 	{
-		print ("<b>command $number</b><br>");
-		while (list($key,$val)=each($command))
+		if (!isset($command['command']))
 		{
-			print ("$key => $val<br>");
+			return false;
 		}
-		return true;
+		else if ($command['command']=="view")
+		{
+			return process_view_command($number,$command);
+		}
+		else if ($command['command']=="add")
+		{
+			return process_add_command($number,$command);
+		}
+		else if ($command['command']=="update")
+		{
+			return process_update_command($number,$command);
+		}
+		else if ($command['command']=="delete")
+		{
+			return process_delete_command($number,$command);
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	# Load the board information
@@ -182,8 +205,6 @@
 				db_query("UPDATE $logintbl SET lastaccess=NOW() WHERE id=\"$loginid\" AND board=\"$board\";");
 				$query=db_query("SELECT $persontbl.* FROM $persontbl,$logintbl WHERE $logintbl.person=$persontbl.id AND $logintbl.id=\"$loginid\" AND $logintbl.board=\"$board\";");
 				$userinfo=mysql_fetch_array($query);
-				
-				print ("Hello ".$userinfo['fullname']."<br><br>");
 				
 				$max=0;
 				if ($_SERVER['REQUEST_METHOD']=='GET')
@@ -220,10 +241,23 @@
 				}
 				
 				$loop=0;
-				while (($loop<=$max)&&
-					((!isset($command[$loop]))||(process_command($loop,$command[$loop]))))
+				$continue=true;
+				while (($loop<=$max)&&($continue))
 				{
+					if (isset($command[$loop]))
+					{
+						$continue=process_command($loop,$command[$loop]);
+					}
 					$loop++;
+				}
+				
+				if ($continue)
+				{
+					print ("Success");
+				}
+				else
+				{
+					print ("Failed");
 				}
 			}
 			else
