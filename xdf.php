@@ -420,7 +420,7 @@
 					{
 						if (isset($command[$loop]))
 						{
-							if ($continue=process_command($loop,$command[$loop]))
+							if ($continue=&process_command($loop,$command[$loop]))
 							{
 								$root->addElement($continue);
 							}

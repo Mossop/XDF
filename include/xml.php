@@ -18,7 +18,7 @@
 		
 		function addElement(&$element)
 		{
-			$this->elements[]=&$element;
+			$this->elements[]=$element;
 		}
 		
 		function setAttribute($attribute,$value)
@@ -95,7 +95,7 @@
 			$this->root = new XmlElement;
 		}
 		
-		function getRootElement()
+		function &getRootElement()
 		{
 			return $this->root;
 		}
