@@ -277,7 +277,7 @@
 	
 	function &getMessageElement($id,$depth)
 	{
-		global $msgtbl,$filetbl;
+		global $msgtbl,$filetbl,$unreadtbl,$userinfo;
 		
 		if (can_view("message"))
 		{
@@ -286,8 +286,10 @@
 			$xml = new XmlElement;
 			$xml->setType("Message");
 			
-			db_lock(array($table => 'READ'));
-			$query=db_query("SELECT * FROM $table WHERE id=$id;");
+			db_lock(array($table => 'READ', $unreadtbl => 'READ'));
+			db_query("CREATE TEMPORARY TABLE unread SELECT message,person from $unreadtbl where person=".$userinfo['id'].";");
+			$query=db_query("SELECT $table.*,unread.message FROM $table LEFT OUTER JOIN unread ON message=id WHERE id=$id;");
+			db_query("DROP TABLE unread;");
 			db_unlock();
 			if ($info=mysql_fetch_array($query))
 			{	
@@ -296,7 +298,21 @@
 				{
 					$name=mysql_field_name($query,$loop);
 					$type=mysql_field_type($query,$loop);
-					if ($type=="datetime")
+					if ($name=="message")
+					{
+						if ($info[$loop]==null)
+						{
+							$xml->setAttribute("unread","false");
+						}
+						else
+						{
+							$xml->setAttribute("unread","true");
+							db_lock(array($unreadtbl => 'WRITE'));
+							db_query("DELETE FROM $unreadtbl WHERE message=$id;");
+							db_unlock();
+						}
+					}
+					else if ($type=="datetime")
 					{
 						$date=&getDateElement(from_mysql_date($info[$loop]));
 						$date->setAttribute("name",$name);
@@ -348,7 +364,7 @@
 	
 	function &getThreadElement($id,$depth)
 	{
-		global $threadtbl,$msgtbl;
+		global $threadtbl,$msgtbl,$unreadtbl,$userinfo;
 		
 		if (can_view("thread"))
 		{
@@ -392,6 +408,13 @@
 					}
 				}
 						
+				db_lock(array($msgtbl => 'READ',$table => 'READ',$unreadtbl => 'READ'));
+				$unread=db_query("SELECT $table.id FROM $table,$msgtbl,$unreadtbl WHERE ".
+					"$table.id=$msgtbl.thread AND $msgtbl.id=$unreadtbl.message AND ".
+					"$unreadtbl.person=".$userinfo['id']." AND $table.id=$id;");
+				$xml->setAttribute("unread",mysql_num_rows($unread));
+				db_unlock();
+
 				if ($depth!=0)
 				{
 					db_lock(array($msgtbl => 'READ'));
@@ -419,7 +442,7 @@
 	
 	function &getFolderElement($id,$depth,$folderdepth)
 	{
-		global $foldertbl,$threadtbl;
+		global $foldertbl,$threadtbl,$msgtbl,$unreadtbl,$userinfo;
 		
 		if (can_view("folder"))
 		{
@@ -462,6 +485,13 @@
 					}
 				}
 						
+				db_lock(array($table => 'READ',$msgtbl => 'READ',$threadtbl => 'READ',$unreadtbl => 'READ'));
+				$unread=db_query("SELECT $table.id FROM $table,$threadtbl,$msgtbl,$unreadtbl WHERE ".
+					"$table.id=$threadtbl.folder AND $threadtbl.id=$msgtbl.thread AND ".
+					"$msgtbl.id=$unreadtbl.message AND $unreadtbl.person=".$userinfo['id']." AND $table.id=$id;");
+				$xml->setAttribute("unread",mysql_num_rows($unread));
+				db_unlock();
+
 				if ($folderdepth!=0)
 				{
 					db_lock(array($table => 'READ'));

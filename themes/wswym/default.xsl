@@ -100,8 +100,19 @@
 									<tr>
 										<td>
 											<a>
-												<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=thread&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=2&amp;name2=messagelist&amp;folder=<xsl:value-of select="/DisplaySet/@folder"/></xsl:attribute>
-												<xsl:value-of select="@name"/>
+												<xsl:attribute name="href">xdf.php?command2=view&amp;class2=board&amp;name2=folderlist&amp;command1=view&amp;class1=thread&amp;id1=<xsl:value-of select="@id"/>&amp;depth1=2&amp;name1=messagelist&amp;folder=<xsl:value-of select="/DisplaySet/@folder"/></xsl:attribute>
+												<xsl:choose>
+													<xsl:when test="@unread &gt; 0">
+														<img src="images/unread.gif" alt="unread" align="middle"/>
+														<xsl:text> </xsl:text>
+														<em><xsl:value-of select="@name"/></em> (<xsl:value-of select="@unread"/>)
+													</xsl:when>
+													<xsl:otherwise>
+														<img src="images/read.gif" alt="read" align="middle"/>
+														<xsl:text> </xsl:text>
+														<xsl:value-of select="@name"/>
+													</xsl:otherwise>
+												</xsl:choose>
 											</a>
 										</td>
 										<td>
@@ -191,7 +202,17 @@
 									<xsl:with-param name="header">
 										<table width="100%">
 											<tr>
-												<td align="left">Posted by <xsl:value-of select="Person/@nickname"/></td>
+												<td align="left">
+													<xsl:choose>
+														<xsl:when test="@unread='true'">
+															<img src="images/unread.gif" align="middle" alt="unread"/>
+														</xsl:when>
+														<xsl:otherwise>
+															<img src="images/read.gif" align="middle" alt="read"/>
+														</xsl:otherwise>
+													</xsl:choose>
+													Posted by <xsl:value-of select="Person/@nickname"/>
+												</td>
 												<td align="right"><xsl:apply-templates select="Date"/></td>
 											</tr>
 											<xsl:if test="($messageadmin=1) or (Person/@id=/DisplaySet/Login/Person/@id)">
