@@ -9,6 +9,41 @@ body {
 	text-align: justify;
 }
 
+td.windowheader {
+	padding: 2px;
+	background: #C0C0C0;
+	font-size: 14px;
+}
+
+td.windowbody {
+	padding: 2px;
+	background: #FFFFFF;
+}
+
+td.darklight {
+	background: #DCDCDC;
+}
+
+td.lightdark {
+	background: #DCDCDC;
+}
+
+td.shadelight {
+	background: #DCDCDC;
+}
+
+td.shadenormal {
+	background: #C0C0C0;
+}
+
+td.shadedark {
+	background: #808080;
+}
+
+td.shadewhite {
+	background: white;
+}
+
 td {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 11px;

@@ -188,68 +188,79 @@
 					<tr width="578">
 						<td align="center">
 							<xsl:for-each select="Message">
-								<table border="0" cellspacing="0" cellpadding="1">
-									<tr>
-										<td class="messageheader">
-											<table>
+								<xsl:call-template name="window">
+									<xsl:with-param name="header">
+										<table width="100%">
+											<tr>
+												<td align="left">Posted by <xsl:value-of select="Person/@nickname"/></td>
+												<td align="right"><xsl:apply-templates select="Date"/></td>
+											</tr>
+											<xsl:if test="($messageadmin=1) or (Person/@id=/DisplaySet/Login/Person/@id)">
 												<tr>
-													<td align="left" class="messageheader">Posted by <xsl:value-of select="Person/@nickname"/></td>
-													<td align="right" class="messageheader"><xsl:apply-templates select="Date"/></td>
+													<td colspan="2">
+														<table>
+															<tr>
+																<td>
+																	<a>
+																		<img src="images/paperclip.gif"/>
+																		Attach File
+																	</a>
+																</td>
+																<td>|</td>
+																<td>
+																	<a>
+																		<img src="images/paperclip.gif"/>
+																		Edit
+																	</a>
+																</td>
+																<td>|</td>
+																<td>
+																	<a>
+																		<img src="images/delete.gif"/>
+																		Delete
+																	</a>
+																</td>
+															</tr>
+														</table>
+													</td>
 												</tr>
-												<xsl:if test="($messageadmin=1) or (Person/@id=/DisplaySet/Login/Person/@id)">
-													<tr>
-														<td colspan="2" width="578" class="messageheader">
-															<a>
-																Attach File
-															</a>
-															<xsl:text> </xsl:text>
-															<a>
-																Edit
-															</a>
-															<xsl:text> </xsl:text>
-															<a>
-																Delete
-															</a>
-														</td>
-													</tr>
-												</xsl:if>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td width="578" class="messagebody">
-											<xsl:call-template name="nl2br">
-												<xsl:with-param name="contents" select="Text[@name='content']"/>
-											</xsl:call-template>
-										</td>
-									</tr>
-									<xsl:if test="count(File) &gt; 0">
-										<tr>
-											<td class="messagebody">
-												<hr/>
-												Attachments:
-												<table>
-													<xsl:for-each select="File">
-														<tr>
-															<td width="20">
-																<xsl:value-of select="position()"/>:
-															</td>
-															<td width="400">
-																<xsl:value-of select="@description"/>
-															</td>
-															<td align="right" width="158">
-																<a>
-																	<xsl:attribute name="href">xdf.php?command=downloadfile&amp;file=<xsl:value-of select="@id"/></xsl:attribute>
-																	<xsl:value-of select="@filename"/>
-																</a>
-															</td>
-														</tr>
-													</xsl:for-each>
-												</table>
-											</td>
-										</tr>
-									</xsl:if>
-								</table>
+											</xsl:if>
+											<xsl:if test="count(File) &gt; 0">
+												<tr>
+													<td colspan="2">
+														<hr/>
+														<table>
+															<xsl:for-each select="File">
+																<tr>
+																	<td width="10">
+																		<img src="images/paperclip.gif"/>
+																	</td>
+																	<td width="20">
+																		<xsl:value-of select="position()"/>:
+																	</td>
+																	<td width="400">
+																		<xsl:value-of select="@description"/>
+																	</td>
+																	<td align="right" width="158">
+																		<a>
+																			<xsl:attribute name="href">xdf.php?command=downloadfile&amp;file=<xsl:value-of select="@id"/></xsl:attribute>
+																			<xsl:value-of select="@filename"/>
+																		</a>
+																	</td>
+																</tr>
+															</xsl:for-each>
+														</table>
+													</td>
+												</tr>
+											</xsl:if>
+										</table>
+									</xsl:with-param>
+									<xsl:with-param name="body">
+										<xsl:call-template name="nl2br">
+											<xsl:with-param name="contents" select="Text[@name='content']"/>
+										</xsl:call-template>
+									</xsl:with-param>
+								</xsl:call-template>
 								<br/>
 							</xsl:for-each>
 						</td>

@@ -95,14 +95,18 @@
 			}
 			else
 			{
-				$content=$content.">\n";
+				$content=$content.">";
+				if (strlen($this->content)>0)
+				{
+					$content=$content."  $indent".strtr($this->content,$xmltrans);
+				}
+				else
+				{
+					$content=$content."\n";
+				}
 				foreach ($this->elements as $elem)
 				{
 					$content=$content.$elem->formattedString("  $indent");
-				}
-				if (strlen($this->content)>0)
-				{
-					$content=$content."  $indent".strtr($this->content,$xmltrans)."\n";
 				}
 				$content=$content."$indent</".$this->type.">\n";
 			}
