@@ -4,10 +4,26 @@
 								xmlns="http://www.w3.org/1999/xhtml1/strict"
 								version="1">
 
-	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
+	<xsl:output method="html" omit-xml-declaration="yes" encoding="iso-8859-1" indent="yes"/>
 
 	<xsl:param name="loginid"/>
 	
+	<xsl:template name="nl2br">
+    <xsl:param name="contents"/>
+    <xsl:choose>
+      <xsl:when test="contains($contents, '&#10;')">
+        <xsl:value-of select="substring-before($contents, '&#10;')"/>
+        <br/>
+        <xsl:call-template name="nl2br">
+          <xsl:with-param name="contents" select="substring-after($contents, '&#10;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$contents"/>
+      </xsl:otherwise>
+    </xsl:choose>
+	</xsl:template>
+
 	<xsl:template match="/DisplaySet">
 		<html>
 			<head>

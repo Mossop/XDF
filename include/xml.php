@@ -102,7 +102,7 @@
 				}
 				if (strlen($this->content)>0)
 				{
-					$content=$content."  $indent".nl2br(strtr($this->content,$xmltrans))."\n";
+					$content=$content."  $indent".strtr($this->content,$xmltrans)."\n";
 				}
 				$content=$content."$indent</".$this->type.">\n";
 			}

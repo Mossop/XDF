@@ -4,15 +4,9 @@
 								xmlns="http://www.w3.org/1999/xhtml1/strict"
 								version="1">
 
-	<xsl:output method="html" omit-xml-declaration="yes" indent="yes"/>
-
 	<xsl:param name="folder"/>
 
 	<xsl:include href="template.xsl"/>
-	
-	<xsl:template match="br">
-		<br><xsl:apply-templates/></br>
-	</xsl:template>
 	
 	<xsl:template match="Date">
 		<xsl:value-of select="format-number(@hour,'0')"/>
@@ -202,7 +196,9 @@
 									</tr>
 									<tr>
 										<td width="578" class="messagebody">
-											<xsl:apply-templates select="Text[@name='content']"/>
+											<xsl:call-template name="nl2br">
+												<xsl:with-param name="contents" select="Text[@name='content']"/>
+											</xsl:call-template>
 										</td>
 									</tr>
 									<tr>
