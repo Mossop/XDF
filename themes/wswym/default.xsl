@@ -271,9 +271,12 @@
 				</td>
 			</xsl:if>
 			<td colspan="1">
-				<img align="top">
-					<xsl:attribute name="src">images/<xsl:value-of select="$status"/>folder.gif</xsl:attribute>
-				</img>
+				<a>
+					<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="@id"/></xsl:attribute>
+					<img align="top">
+						<xsl:attribute name="src">images/<xsl:value-of select="$status"/>folder.gif</xsl:attribute>
+					</img>
+				</a>
 			</td>
 			<td>
 				<xsl:attribute name="colspan"><xsl:value-of select="$span"/></xsl:attribute>
@@ -293,22 +296,6 @@
 
 	</xsl:template>
 	
-	<xsl:template name="folderlist">
-		<xsl:param name="status"/>
-
-		<img align="top">
-			<xsl:attribute name="src">images/<xsl:value-of select="$status"/>folder.gif</xsl:attribute>
-		</img>
-
-		<xsl:text> </xsl:text>
-
-		<a>
-			<xsl:attribute name="class"><xsl:value-of select="$status"/>folder</xsl:attribute>
-			<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="@id"/></xsl:attribute>
-			<xsl:value-of select="@name"/>
-		</a>
-	</xsl:template>
-
 	<xsl:template name="getstatus">
 		<xsl:choose>
 			<xsl:when test="/DisplaySet/@folder=@id">open</xsl:when>
