@@ -446,8 +446,6 @@
 							$stylesheet="default";
 						}
 						$xh=xslt_create();
-						xslt_set_log($xh,true);
-						xslt_set_log($xh, getcwd() . '/myfile.log');
 						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString()),$othercommands));
 						xslt_free($xh);
 
