@@ -470,6 +470,8 @@
 		}
 	}
 	
+	$start=time();
+	
 	# Load the board information
   include "init.php";
 
@@ -493,6 +495,7 @@
 		if ($boardinfo!=null)
 		{	
 			expire_sessions();
+			$init=time();
 	
 			$loginid=check_login();
 			
@@ -505,6 +508,7 @@
 				$userinfo=mysql_fetch_array($query);
 				db_unlock();
 				
+				$login=time();
 				$max=-1;
 				if ($_SERVER['REQUEST_METHOD']=='GET')
 				{
@@ -565,6 +569,7 @@
 							$othercommands[$key]=$val;
 						}
 					}
+					$parse=time();
 					
 					$xml = new XmlDoc;
 					$root=&$xml->getRootElement();
@@ -600,6 +605,8 @@
 						$loop++;
 					}
 					
+					$execute=time();
+					
 					if ($continue)
 					{
 						header("Content-Type: text/html");
@@ -628,6 +635,14 @@
 						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString())));
 						xslt_free($xh);
 
+						$style=time();
+						
+						$info->setAttribute("style",($style-$execute)."ms");
+						$info->setAttribute("execute",($execute-$parse)."ms");
+						$info->setAttribute("parse",($parse-$login)."ms");
+						$info->setAttribute("login",($login-$init)."ms");
+						$info->setAttribute("init",($init-$start)."ms");
+						
 						$fp=fopen("output.xml","w");
 						fwrite($fp,$xml->toString());
 						fclose($fp);

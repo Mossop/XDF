@@ -18,8 +18,6 @@
 					<td><b>Username</b></td>
 					<td><b>Last on</b></td>
 					<td><b>Full Name</b></td>
-					<td></td>
-					<td></td>
 				</tr>
 				<xsl:for-each select="LoginInfo/Login">
 					<xsl:sort select="@id"/>
@@ -27,8 +25,6 @@
 						<td><xsl:value-of select="@id"/></td>
 						<td><xsl:apply-templates select="Date"/></td>
 						<td><xsl:value-of select="Person/@fullname"/></td>
-						<td></td>
-						<td></td>
 					</tr>
 				</xsl:for-each>
 			</table>
@@ -45,9 +41,6 @@
 					<td><b>Name</b></td>
 					<td><b>Email</b></td>
 					<td><b>Phone</b></td>
-					<td></td>
-					<td></td>
-					<td></td>
 				</tr>
 				<xsl:for-each select="People/Person">
 					<tr>
@@ -59,9 +52,6 @@
 							</a>
 						</td>
 						<td><xsl:value-of select="@phone"/></td>
-						<td></td>
-						<td></td>
-						<td></td>
 					</tr>
 				</xsl:for-each>
 			</table>
