@@ -8,6 +8,15 @@
 
 	<xsl:param name="loginid"/>
 	
+  <xsl:template name="maxdepth">
+    <xsl:for-each select="//Folder"> <!-- sorry everyone! -->
+      <xsl:sort select="count(ancestor::Folder)" order="descending"/>
+      <xsl:if test="position()=1">
+        <xsl:value-of select="count(ancestor::Folder)"/>
+      </xsl:if>
+	  </xsl:for-each>
+	</xsl:template>
+
 	<xsl:template name="nl2br">
     <xsl:param name="contents"/>
     <xsl:choose>
