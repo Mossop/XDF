@@ -6,6 +6,8 @@
 	# logging in and out of the board and creating the functions needed
 	# by the display pages.
 
+	$locks=0;
+
 	# Sends the header to the browser.
   function send_http_header()
   {
@@ -201,7 +203,14 @@
 	
 	function db_lock($tables)
 	{
+		global $locks;
+		
 		$sql="";
+		$locks++;
+		if ($locks>1)
+		{
+			print ("Warning, re-locking database<br>\n");
+		}
 		while (list($table,$lock)=each($tables))
 		{
 			$sql=$sql."$table $lock,";
@@ -212,14 +221,25 @@
 	
 	function db_unlock()
 	{
+		global $locks;
+		
 		db_query("UNLOCK TABLES;");
+		$locks--;
+		if ($locks<0)
+		{
+			print ("Warning, unlocked too many times<br>\n");
+		}
 	}
 	
 	function db_query($sql)
 	{
-		global $connection;
+		global $connection,$locks;
 		
-		print ($sql."<br>");
+		if ($locks<=0)
+		{
+			print ("Warning, querying without first locking - $sql<br>\n");
+		}
+		#print ($sql."<br>\n");
 		$query=mysql_query($sql,$connection);
 		if ($query==null)
 		{
@@ -236,10 +256,10 @@
 	
 	function get_board_info()
 	{
-		global $boardtbl,$foldertbl;
+		global $boardtbl,$foldertbl,$board;
 		
 		db_lock(array($boardtbl => 'READ',$foldertbl => 'READ'));
-		$query=db_query("SELECT $boardtbl.id,timeout,name,rootfolder FROM ".
+		$query=db_query("SELECT $boardtbl.id,name,rootfolder FROM ".
 			"$boardtbl,$foldertbl WHERE $boardtbl.id=\"$board\" AND rootfolder=$foldertbl.id;");
 		db_unlock();
 	
@@ -258,10 +278,11 @@
 	}
 	
 	# Include the main functions.
-	include "include/view.php";
-	include "include/add.php";
-	include "include/update.php";
-	include "include/delete.php";
+	require "include/view.php";
+	require "include/add.php";
+	require "include/update.php";
+	require "include/delete.php";
+	require "include/xml.php";
 	
 	function process_command($number,$command)
 	{
@@ -314,7 +335,7 @@
 		
 		$connection=db_setup();
 		
-		$boardinfo=get_board_info;
+		$boardinfo=get_board_info();
 		
 		if ($boardinfo!=null)
 		{	
@@ -387,20 +408,30 @@
 						}
 					}
 					
+					$xml = new XmlDoc;
+					$root=&$xml->getRootElement();
+					$root->setType("DisplaySet");
+					$root->setAttribute("board",$boardinfo['id']);
+					$displays=0;
+					
 					$loop=0;
 					$continue=true;
 					while (($loop<=$max)&&($continue))
 					{
 						if (isset($command[$loop]))
 						{
-							$continue=process_command($loop,$command[$loop]);
+							if ($continue=process_command($loop,$command[$loop]))
+							{
+								$root->addElement($continue);
+							}
 						}
 						$loop++;
 					}
-				
+					
 					if ($continue)
 					{
-						print ("Success");
+						header("Content-Type: text/xml");
+						print ($xml->toString());
 					}
 					else
 					{
@@ -412,7 +443,7 @@
 			{
 				print ("Eeek an intruder!");
 			}
-			db_unlock();
+			#db_unlock();
 		}
 		else
 		{
