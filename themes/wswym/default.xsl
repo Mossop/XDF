@@ -4,8 +4,6 @@
 								xmlns="http://www.w3.org/1999/xhtml1/strict"
 								version="1">
 
-	<xsl:param name="folder"/>
-
 	<xsl:include href="template.xsl"/>
 	<xsl:include href="functions.xsl"/>	
 	
@@ -90,7 +88,7 @@
 	</xsl:template>
 			
 	<xsl:template match="Folder" mode="threadlist">
-		<xsl:if test="$folder=@id">
+		<xsl:if test="/DisplaySet/@folder=@id">
 
 			<td width="578" valign="top">
 				<table border="0">
@@ -114,7 +112,7 @@
 									<tr>
 										<td>
 											<a>
-												<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=thread&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=2&amp;name2=messagelist&amp;folder=<xsl:value-of select="$folder"/></xsl:attribute>
+												<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=thread&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=2&amp;name2=messagelist&amp;folder=<xsl:value-of select="/DisplaySet/@folder"/></xsl:attribute>
 												<xsl:value-of select="@name"/>
 											</a>
 										</td>
@@ -143,7 +141,7 @@
 			
 		</xsl:if>
 
-		<xsl:if test="not($folder=@id)">
+		<xsl:if test="not(/DisplaySet/@folder=@id)">
 			<xsl:apply-templates select="Folder" mode="threadlist"/>
 		</xsl:if>
 
@@ -313,7 +311,7 @@
 
 	<xsl:template name="getstatus">
 		<xsl:choose>
-			<xsl:when test="$folder=@id">open</xsl:when>
+			<xsl:when test="/DisplaySet/@folder=@id">open</xsl:when>
 			<xsl:otherwise>closed</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>

@@ -553,6 +553,7 @@
 					
 					$xml = new XmlDoc;
 					$root=&$xml->getRootElement();
+					$root->setAttributes($othercommands);
 					$root->setType("DisplaySet");
 					$root->setAttribute("board",$boardinfo['id']);
 					$userelement=&getLoginElement($loginid,1);
@@ -563,6 +564,11 @@
 					$boardelement->setAttribute("rootfolder",$boardinfo['rootfolder']);
 					$root->addElement($boardelement);
 					$root->addElement($userelement);
+					$info = new XmlElement;
+					$info->setType("Info");
+					$info->setAttribute("queries",$queries);
+					$info->setAttribute("locks",$locks);
+					$root->addElement($info);
 					$displays=0;
 					
 					$loop=0;
@@ -603,7 +609,7 @@
 							$stylesheet=$gettheme['theme'].'/'.$stylesheet;
 						}
 						$xh=xslt_create();
-						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString()),$othercommands));
+						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString())));
 						xslt_free($xh);
 
 						$fp=fopen("output.xml","w");
