@@ -7,3 +7,8 @@
 	Order Allow,Deny
 	Allow from all
 </Files>
+
+<Files "badsetup.php">
+	Order Allow,Deny
+	Allow from all
+</Files>
