@@ -5,12 +5,18 @@
 		$date = new XmlElement;
 		$date->setType("Date");
 		$today=getdate($timestamp);
-		$date->setAttribute("day",$today['mday']);
-		$date->setAttribute("month",$today['month']);
-		$date->setAttribute("year",$today['year']);
 		$date->setAttribute("hour",$today['hours']);
+		$date->setAttribute("hour12",date("g",$timestamp));
 		$date->setAttribute("minute",$today['minutes']);
 		$date->setAttribute("second",$today['seconds']);
+		$date->setAttribute("day",$today['mday']);
+		$date->setAttribute("wday",$today['weekday']);
+		$date->setAttribute("wd",date("D",$timestamp));
+		$date->setAttribute("suffix",date("S",$timestamp));
+		$date->setAttribute("month",$today['mon']);
+		$date->setAttribute("longmonth",$today['month']);
+		$date->setAttribute("mon",date("M",$timestamp));
+		$date->setAttribute("year",$today['year']);
 		return $date;
 	}
 	

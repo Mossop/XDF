@@ -10,8 +10,20 @@
 
 	<xsl:include href="template.xsl"/>
 	
+	<xsl:template match="br">
+		<br><xsl:apply-templates/></br>
+	</xsl:template>
+	
 	<xsl:template match="Date">
-		<xsl:value-of select="@hour"/>:<xsl:value-of select="@minute"/>, <xsl:value-of select="@day"/>/<xsl:value-of select="@month"/>/<xsl:value-of select="@year"/>
+		<xsl:value-of select="format-number(@hour,'0')"/>
+		<xsl:text>:</xsl:text>
+		<xsl:value-of select="format-number(@minute,'0')"/>
+		<xsl:text>, </xsl:text>
+		<xsl:value-of select="@day"/><xsl:value-of select="@suffix"/>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@longmonth"/>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@year"/>
 	</xsl:template>
 	
 	<xsl:template match="Display[@name='userlist']">
@@ -29,26 +41,24 @@
 					<td></td>
 					<td></td>
 				</tr>
-				<xsl:apply-templates mode="userlist"/>
+				<xsl:for-each select="LoginInfo">
+					<xsl:for-each select="Login">
+						<xsl:sort select="@id"/>
+						<tr>
+							<td><xsl:value-of select="@id"/></td>
+							<td><xsl:apply-templates select="Date"/></td>
+							<xsl:for-each select="Person">
+								<td><xsl:value-of select="@fullname"/></td>
+							</xsl:for-each>
+							<td></td>
+							<td></td>
+						</tr>
+					</xsl:for-each>
+				</xsl:for-each>
 			</table>
 		</td>
 	</xsl:template>
 
-	<xsl:template match="LoginInfo" mode="userlist">
-		<xsl:for-each select="Login">
-			<xsl:sort select="@id"/>
-			<tr>
-				<td><xsl:value-of select="@id"/></td>
-				<td><xsl:apply-templates select="Date"/></td>
-				<xsl:for-each select="Person">
-					<td><xsl:value-of select="@fullname"/></td>
-				</xsl:for-each>
-				<td></td>
-				<td></td>
-			</tr>
-		</xsl:for-each>
-	</xsl:template>
-		
 	<xsl:template match="Display[@name='peoplelist']">
 		<td width="578" valign="top">
 			<table border="0">
@@ -65,32 +75,167 @@
 					<td></td>
 					<td></td>
 				</tr>
-				<xsl:apply-templates mode="peoplelist"/>
+				<xsl:for-each select="People">
+					<xsl:for-each select="Person">
+						<tr>
+							<td><xsl:value-of select="@fullname"/></td>
+							<td>
+								<a>
+									<xsl:attribute name="href">mailto:<xsl:value-of select="@email"/></xsl:attribute>
+									<xsl:value-of select="@email"/>
+								</a>
+							</td>
+							<td><xsl:value-of select="@phone"/></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</xsl:for-each>
+				</xsl:for-each>
 			</table>
 		</td>
 	</xsl:template>
 	
-	<xsl:template match="People" mode="peoplelist">
-		<xsl:for-each select="Person">
-			<tr>
-				<td><xsl:value-of select="@fullname"/></td>
-				<td>
-					<a>
-						<xsl:attribute name="email">mailto:<xsl:value-of select="@email"/></xsl:attribute>
-						<xsl:value-of select="@email"/>
-					</a>
-				</td>
-				<td><xsl:value-of select="@phone"/></td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-		</xsl:for-each>
+	<xsl:template match="Display[@name='threadlist']">
+		<xsl:apply-templates select="Folder" mode="threadlist"/>
+	</xsl:template>
+			
+	<xsl:template match="Folder" mode="threadlist">
+		<xsl:if test="$folder=@id">
+
+			<td width="578" valign="top">
+				<table border="0">
+					<tr>
+						<td valign="top">
+							<h1><xsl:value-of select="@name"/> Messages</h1>
+						</td>
+						<td valign="top" align="right">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" width="578">
+							<table border="0" cellspacing="1">
+								<tr>
+									<td width="338"><b>Thread</b></td>
+									<td width="100"><b>Author</b></td>
+									<td width="120" align="right"><b>Started</b></td>
+									<td width="20"></td>
+								</tr>
+								<xsl:for-each select="Thread">
+									<tr>
+										<td>
+											<a>
+												<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=thread&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=2&amp;name2=messagelist&amp;folder=<xsl:value-of select="$folder"/></xsl:attribute>
+												<xsl:value-of select="@name"/>
+											</a>
+										</td>
+										<td>
+											<xsl:for-each select="Person">
+												<xsl:value-of select="@nickname"/>
+											</xsl:for-each>
+										</td>
+										<td align="right"><xsl:apply-templates select="Date"/></td>
+										<td></td>
+									</tr>
+								</xsl:for-each>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<hr/>
+							<h2>Post a new thread:</h2>
+						</td>
+					</tr>
+					<tr>
+						<td align="center" colspan="2">
+						</td>
+					</tr>
+				</table>
+			</td>
+			
+		</xsl:if>
+
+		<xsl:if test="not($folder=@id)">
+			<xsl:apply-templates select="Folder" mode="threadlist"/>
+		</xsl:if>
+
 	</xsl:template>
 	
-	<xsl:template match="Display[@name='threadlist']">
-		<td width="578" valign="top">
-		</td>
+	<xsl:template match="Display[@name='messagelist']">
+		<xsl:for-each select="//Thread">
+			<td width="578" valign="top">
+				<table>
+					<tr>
+						<td>
+							<h1>Messages in the thread &quot;<xsl:value-of select="@name"/>&quot;</h1>
+						</td>
+					</tr>
+					<tr width="578">
+						<td align="center">
+							<xsl:for-each select="Message">
+								<table border="0" cellspacing="0" cellpadding="1">
+									<tr>
+										<td class="messageheader">
+											<table>
+												<tr>
+													<xsl:for-each select="Person">
+														<td align="left" class="messageheader">Posted by <xsl:value-of select="@nickname"/></td>
+													</xsl:for-each>
+													<td align="right" class="messageheader"><xsl:apply-templates select="Date"/></td>
+												</tr>
+												<tr>
+													<td colspan="2" width="578" class="messageheader">
+														<a>
+															Attach File
+														</a>
+														<a>
+															Edit
+														</a>
+														<a>
+															Delete
+														</a>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td width="578" class="messagebody">
+											<xsl:apply-templates select="Text[@name='content']"/>
+										</td>
+									</tr>
+									<tr>
+										<td class="messagebody">
+											<hr/>
+											Attachments:
+											<table>
+												<xsl:for-each select="File"/>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<br/>
+							</xsl:for-each>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<hr/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<h2>Add a new reply to this thread:</h2>
+						</td>
+					</tr>
+					<tr>
+						<td align="center">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</xsl:for-each>
 	</xsl:template>
 	
 	<xsl:template match="Display[@name='folderlist']">

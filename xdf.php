@@ -417,7 +417,7 @@
 					$root=&$xml->getRootElement();
 					$root->setType("DisplaySet");
 					$root->setAttribute("board",$boardinfo['id']);
-					$userelement=&getLoginElement($loginid,0);
+					$userelement=&getLoginElement($loginid,1);
 					$boardelement = new XmlElement;
 					$boardelement->setType("Board");
 					$boardelement->setAttribute("id",$boardinfo['id']);
@@ -457,7 +457,11 @@
 						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString()),$othercommands));
 						xslt_free($xh);
 
-						print($xml->toString());
+						$fp=fopen("output.xml","w");
+						fwrite($fp,$xml->toString());
+						fclose($fp);
+						
+						#print($xml->toString());
 					}
 					else
 					{

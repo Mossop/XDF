@@ -16,3 +16,5 @@ insert into xdf.Groups (id) select id from Groups;
 insert into xdf.UserGroup (group_id,user) select group_id,user_id from UserGroup;
 insert into xdf.EditedMessage (message,person,altered) select message_id,person,altered from EditedMessage;
 insert into xdf.UnreadMessage (message,person) select distinct message_id,person from UnreadMessage,User where user_id=id;
+
+insert into xdf.Groups (id) values ("admin");
