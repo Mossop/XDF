@@ -642,6 +642,7 @@
 						$info->setAttribute("parse",($parse-$login)."ms");
 						$info->setAttribute("login",($login-$init)."ms");
 						$info->setAttribute("init",($init-$start)."ms");
+						$info->setAttribute("total",($style-$start)."ms");
 						
 						$fp=fopen("output.xml","w");
 						fwrite($fp,$xml->toString());
