@@ -541,10 +541,6 @@
 			$xml = new XmlElement;
 			$xml->setType("Display");
 			$xml->setAttribute("id",$displays);
-			if (isset($command['name']))
-			{
-				$xml->setAttribute("name",$command['name']);
-			}
 			if (!isset($command['depth']))
 			{
 				$command['depth']=0;
@@ -555,6 +551,7 @@
 				$command['id']=$boardinfo['rootfolder'];
 				$command['folderdepth']=-1;
 			}
+			$xml->setAttributes($command);
 			if (isset($command['id']))
 			{
 				if ($command['class']=="person")
