@@ -6,6 +6,8 @@
 
 	<xsl:output method="html" omit-xml-declaration="yes" encoding="iso-8859-1" indent="yes"/>
 
+	<xsl:include href="folderlist.xsl"/>
+
 	<xsl:template name="checkaccess">
 		<xsl:param name="class"/>
 		<xsl:param name="type"/>
@@ -103,6 +105,10 @@
 		</xsl:call-template>
 	</xsl:variable>
 	
+	<xsl:template match="Display[@name='folderlist']">
+		<xsl:call-template name="folderlist"/>
+	</xsl:template>
+	
 	<xsl:template match="/DisplaySet">
 		<html>
 			<head>
@@ -161,9 +167,12 @@
 							<hr/>
 							<table border="0">
 								<tr>
-								
-									<xsl:apply-templates select="Display"/>
-									
+									<td width="200" valign="top">
+										<xsl:apply-templates select="Display[@name='folderlist']"/>
+									</td>
+									<td width="578" valign="top">
+										<xsl:apply-templates select="Display[@name!='folderlist']"/>
+									</td>
 								</tr>
 							</table>
 						</td>
