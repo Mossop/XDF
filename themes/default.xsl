@@ -35,19 +35,15 @@
 					<td></td>
 					<td></td>
 				</tr>
-				<xsl:for-each select="LoginInfo">
-					<xsl:for-each select="Login">
-						<xsl:sort select="@id"/>
-						<tr>
-							<td><xsl:value-of select="@id"/></td>
-							<td><xsl:apply-templates select="Date"/></td>
-							<xsl:for-each select="Person">
-								<td><xsl:value-of select="@fullname"/></td>
-							</xsl:for-each>
-							<td></td>
-							<td></td>
-						</tr>
-					</xsl:for-each>
+				<xsl:for-each select="LoginInfo/Login">
+					<xsl:sort select="@id"/>
+					<tr>
+						<td><xsl:value-of select="@id"/></td>
+						<td><xsl:apply-templates select="Date"/></td>
+						<td><xsl:value-of select="Person/@fullname"/></td>
+						<td></td>
+						<td></td>
+					</tr>
 				</xsl:for-each>
 			</table>
 		</td>
@@ -69,22 +65,20 @@
 					<td></td>
 					<td></td>
 				</tr>
-				<xsl:for-each select="People">
-					<xsl:for-each select="Person">
-						<tr>
-							<td><xsl:value-of select="@fullname"/></td>
-							<td>
-								<a>
-									<xsl:attribute name="href">mailto:<xsl:value-of select="@email"/></xsl:attribute>
-									<xsl:value-of select="@email"/>
-								</a>
-							</td>
-							<td><xsl:value-of select="@phone"/></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-					</xsl:for-each>
+				<xsl:for-each select="People/Person">
+					<tr>
+						<td><xsl:value-of select="@fullname"/></td>
+						<td>
+							<a>
+								<xsl:attribute name="href">mailto:<xsl:value-of select="@email"/></xsl:attribute>
+								<xsl:value-of select="@email"/>
+							</a>
+						</td>
+						<td><xsl:value-of select="@phone"/></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
 				</xsl:for-each>
 			</table>
 		</td>
@@ -124,9 +118,7 @@
 											</a>
 										</td>
 										<td>
-											<xsl:for-each select="Person">
-												<xsl:value-of select="@nickname"/>
-											</xsl:for-each>
+											<xsl:value-of select="Person/@nickname"/>
 										</td>
 										<td align="right"><xsl:apply-templates select="Date"/></td>
 										<td></td>
@@ -173,9 +165,7 @@
 										<td class="messageheader">
 											<table>
 												<tr>
-													<xsl:for-each select="Person">
-														<td align="left" class="messageheader">Posted by <xsl:value-of select="@nickname"/></td>
-													</xsl:for-each>
+													<td align="left" class="messageheader">Posted by <xsl:value-of select="Person/@nickname"/></td>
 													<td align="right" class="messageheader"><xsl:apply-templates select="Date"/></td>
 												</tr>
 												<tr>
@@ -183,9 +173,11 @@
 														<a>
 															Attach File
 														</a>
+														<xsl:text> </xsl:text>
 														<a>
 															Edit
 														</a>
+														<xsl:text> </xsl:text>
 														<a>
 															Delete
 														</a>

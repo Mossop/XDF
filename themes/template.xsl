@@ -47,12 +47,10 @@
 							<table>
 								<tr>
 									<td>
-										<xsl:for-each select="Board">
-											<a>
-												<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="@rootfolder"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="@rootfolder"/></xsl:attribute>
-												Announcements
-											</a>
-										</xsl:for-each>
+										<a>
+											<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="Board/@rootfolder"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="Board/@rootfolder"/></xsl:attribute>
+											Announcements
+										</a>
 									</td>
 									<td>
 										<a href="xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=people&amp;name2=peoplelist">
@@ -68,13 +66,9 @@
 							</table>
 						</td>
 						<td align="right">
-							<xsl:for-each select="Login">
-								Currently logged in as
-								<xsl:value-of select="@id"/>
-								<xsl:for-each select="Person">
-									(<xsl:value-of select="@fullname"/>)
-								</xsl:for-each>
-							</xsl:for-each>
+							Currently logged in as
+							<xsl:value-of select="Login/@id"/>
+							(<xsl:value-of select="Login/Person/@fullname"/>)
 						</td>
 					</tr>
 					<tr>
