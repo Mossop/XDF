@@ -1,0 +1,16 @@
+eXtensible Discussion Forum
+---------------------------
+
+This is the base directory for the XDF project. It was spawned from the
+PhpBoard project when it was realised that the design made the board consist
+of too much hard code. Much of the code used to update the code will be
+carried across, but most of the presentation code will be lost in favour of
+new methods.
+
+The new project will make extensive use of XML and XSLT. A php script will
+handle any updating of the forum and format any data in an xml document. An
+XSLT stylesheet will then be used to format this data for the users browser.
+
+Unlike the PhpBoard project, the themes will not be made up of php scripts
+but rather a collection of XSLT stylesheets. The user will also be able to
+select a theme to use rather then the theme being set by the board.
