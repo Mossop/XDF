@@ -162,32 +162,34 @@
 						</input>
 					</form>
 				</tr>
-				<tr>
-					<form action="xdf.php" method="post">
-						<input type="hidden" name="command1" value="delete"/>
-						<input type="hidden" name="class1" value="folder"/>
-						<input type="hidden" name="id1">
-							<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
-						</input>
-
-						<td>Delete this folder:</td>
-						<td colspan="2"><input type="submit" value="Delete"/></td>
-
-						<input type="hidden" name="command2" value="view"/>
-						<input type="hidden" name="class2" value="board"/>
-						<input type="hidden" name="name2" value="folderlist"/>
-						<input type="hidden" name="command3" value="view"/>
-						<input type="hidden" name="class3" value="folder"/>
-						<input type="hidden" name="id3">
-							<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
-						</input>
-						<input type="hidden" name="depth3" value="1"/>
-						<input type="hidden" name="name3" value="threadlist"/>
-						<input type="hidden" name="folder">
-							<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
-						</input>
-					</form>
-				</tr>
+				<xsl:if test="count(ancestor::Folder) &gt; 0">
+					<tr>
+						<form action="xdf.php" method="post">
+							<input type="hidden" name="command1" value="delete"/>
+							<input type="hidden" name="class1" value="folder"/>
+							<input type="hidden" name="id1">
+								<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+							</input>
+	
+							<td>Delete this folder:</td>
+							<td colspan="2"><input type="submit" value="Delete"/></td>
+	
+							<input type="hidden" name="command2" value="view"/>
+							<input type="hidden" name="class2" value="board"/>
+							<input type="hidden" name="name2" value="folderlist"/>
+							<input type="hidden" name="command3" value="view"/>
+							<input type="hidden" name="class3" value="folder"/>
+							<input type="hidden" name="id3">
+								<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
+							</input>
+							<input type="hidden" name="depth3" value="1"/>
+							<input type="hidden" name="name3" value="threadlist"/>
+							<input type="hidden" name="folder">
+								<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
+							</input>
+						</form>
+					</tr>
+				</xsl:if>
 				<tr>
 					<td colspan="3"><hr/></td>
 				</tr>
