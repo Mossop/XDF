@@ -2,6 +2,16 @@
 
 	function delete_file($id)
 	{
+		global $filetbl;
+		
+		db_lock(array($filetbl => 'WRITE'));
+		$query=db_query("select name from $filetbl where id=$id;");
+		while ($msg=mysql_fetch_array($query))
+		{
+			unlink("files/".$msg['name']);
+			db_query("DELETE FROM $filetbl WHERE id=$id;");
+		}
+		db_unlock();
 	}
 	
 	function delete_person($id)
@@ -20,13 +30,12 @@
 		db_lock(array($msgtbl => 'WRITE', $unreadtbl => 'WRITE', $filetbl => 'WRITE'));
 		db_query("DELETE FROM $unreadtbl WHERE message=$message;");
 		db_query("DELETE FROM $msgtbl WHERE id=$message;");
-		$query=db_query("SELECT name FROM $filetbl WHERE message=$message;");
-		while ($msg=mysql_fetch_array($query))
-		{
-			unlink("files/".$msg['name']);
-		}
-		db_query("DELETE FROM $filetbl WHERE message=$message;");
+		$query=db_query("SELECT id FROM $filetbl WHERE message=$message;");
 		db_unlock();
+		while ($file=mysql_fetch_array($query))
+		{
+			delete_file($file['id']);
+		}
 	}
 	
 	# Deletes a thread and all messages associated with it.

@@ -199,7 +199,8 @@
 														<table>
 															<tr>
 																<td valign="middle">
-																	<a href="">
+																	<a>
+																		<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=message&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=0&amp;name2=fileupload&amp;folder=<xsl:value-of select="../../@folder"/>&amp;stylesheet=edit</xsl:attribute>
 																		<img align="middle" src="images/paperclip.gif"/>
 																		Attach File
 																	</a>
@@ -247,6 +248,14 @@
 																			<xsl:value-of select="@filename"/>
 																		</a>
 																	</td>
+																	<xsl:if test="($messageadmin=1) or (Person/@id=/DisplaySet/Login/Person/@id)">
+																		<td>
+																			<a>
+																				<xsl:attribute name="href">xdf.php?command1=delete&amp;class1=file&amp;id1=<xsl:value-of select="@id"/>&amp;command2=view&amp;class2=board&amp;name2=folderlist&amp;command3=view&amp;class3=thread&amp;id3=<xsl:value-of select="../../@id"/>&amp;depth3=2&amp;name3=messagelist&amp;folder=<xsl:value-of select="../../../@folder"/></xsl:attribute>
+																				<img src="images/delete.gif" alt="delete" align="middle"/>
+																			</a>
+																		</td>
+																	</xsl:if>
 																</tr>
 															</xsl:for-each>
 														</table>

@@ -15,6 +15,43 @@
 	<xsl:template match="Display[@name='threadedit']">
 	</xsl:template>
 			
+	<xsl:template match="Display[@name='fileupload']//Message">
+		<h2>Select a file to attach to this message.</h2>
+		<form action="xdf.php" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="command1" value="add"/>
+			<input type="hidden" name="class1" value="file"/>
+			<input type="hidden" name="message1">
+				<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+			</input>
+			<table>
+				<tr>
+					<td>Description:</td>
+					<td><input name="description1" type="text"/></td>
+				</tr>
+				<tr>
+					<td>Send this file:</td>
+					<td><input name="file1" type="file"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center"><input type="submit" value="Send File"/></td>
+				</tr>
+			</table>
+			<input type="hidden" name="command2" value="view"/>
+			<input type="hidden" name="class2" value="board"/>
+			<input type="hidden" name="name2" value="folderlist"/>
+			<input type="hidden" name="command3" value="view"/>
+			<input type="hidden" name="class3" value="thread"/>
+			<input type="hidden" name="id3">
+				<xsl:attribute name="value"><xsl:value-of select="../@id"/></xsl:attribute>
+			</input>
+			<input type="hidden" name="depth3" value="2"/>
+			<input type="hidden" name="name3" value="messagelist"/>
+			<input type="hidden" name="folder">
+				<xsl:attribute name="value"><xsl:value-of select="../../@id"/></xsl:attribute>
+			</input>
+		</form>
+	</xsl:template>
+	
 	<xsl:template match="Display[@name='messageedit']//Message">
 		<h2>Edit message:</h2>
 		<form action="xdf.php" method="post">

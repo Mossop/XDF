@@ -2,7 +2,7 @@
 
 	function process_add_command($number,$command)
 	{
-		global $unreadtbl,$logintbl,$board,$userinfo,$editedtbl;
+		global $unreadtbl,$logintbl,$board,$userinfo,$editedtbl,$filetbl;
 		
 		if ((isset($command['class']))&&(can_add($command['class'])))
 		{
