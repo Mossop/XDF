@@ -485,7 +485,7 @@
 	
 	function &process_view_command($number,$command)
 	{
-		global $displays,$foldertbl,$threadtbl,$msgtbl,$filetbl,$persontbl,$logintbl,$grouptbl;
+		global $boardinfo,$displays,$foldertbl,$threadtbl,$msgtbl,$filetbl,$persontbl,$logintbl,$grouptbl;
 		
 		if (isset($command['class']))
 		{
@@ -500,6 +500,12 @@
 			if (!isset($command['depth']))
 			{
 				$command['depth']=0;
+			}
+			if ($command['class']=="board")
+			{
+				$command['class']="folder";
+				$command['id']=$boardinfo['rootfolder'];
+				$command['folderdepth']=-1;
 			}
 			if (isset($command['id']))
 			{

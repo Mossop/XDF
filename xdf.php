@@ -352,7 +352,7 @@
 				$userinfo=mysql_fetch_array($query);
 				db_unlock();
 				
-				$max=0;
+				$max=-1;
 				if ($_SERVER['REQUEST_METHOD']=='GET')
 				{
 					$http_vars=&$_GET;
@@ -388,6 +388,7 @@
 				}
 				else
 				{
+					$othercommands=array();
 					while (list($key,$val)=each($http_vars))
 					{
 						if (ereg("([_a-zA-Z]+)([0-9]+)",$key,$regs))
@@ -405,6 +406,10 @@
 							{
 								$max=$regs[2];
 							}
+						}
+						else
+						{
+							$othercommands[$key]=$val;
 						}
 					}
 					
@@ -430,8 +435,23 @@
 					
 					if ($continue)
 					{
-						header("Content-Type: text/plain");
-						print ($xml->toString());
+						header("Content-Type: text/html");
+						
+						if (isset($othercommands['stylesheet']))
+						{
+							$stylesheet=$othercommands['stylesheet'];
+						}
+						else
+						{
+							$stylesheet="default";
+						}
+						$xh=xslt_create();
+						xslt_set_log($xh,true);
+						xslt_set_log($xh, getcwd() . '/myfile.log');
+						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString()),$othercommands));
+						xslt_free($xh);
+
+#						print($xml->toString());
 					}
 					else
 					{
