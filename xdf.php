@@ -9,6 +9,7 @@
 	$locks=0;
 	$queries=0;
 	$querylog=fopen("queries.log","w");
+	$lastid=0;
 
 	# Sends the header to the browser.
   function send_http_header()
@@ -369,9 +370,16 @@
 		}
 	}
 	
+	function db_last_id()
+	{
+		global $lastid;
+		
+		return $lastid;
+	}
+	
 	function db_query($sql)
 	{
-		global $connection,$locks,$queries,$querylog;
+		global $connection,$locks,$queries,$querylog,$lastid;
 		
 		if ($locks<=0)
 		{
@@ -386,6 +394,11 @@
 			print ("Error runnng query $sql<br>");
 			print (mysql_error()."<br>");
 			return false;
+		}
+		$check=mysql_insert_id($connection);
+		if ($check!=0)
+		{
+			$lastid=$check;
 		}
 		return $query;
 	}

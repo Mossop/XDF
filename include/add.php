@@ -75,7 +75,7 @@
 						{
 							if (($type=="int")&&($value=="lastid"))
 							{
-								$value=mysql_insert_id();
+								$value=db_last_id();
 							}
 							$values=$values.$value.",";
 						}
@@ -88,6 +88,7 @@
 				{
 					if (db_query($sql))
 					{
+						db_unlock();
 						if (($command['class']=="message")&&(mysql_affected_rows()>0))
 						{
 							if (isset($command['id']))
@@ -102,8 +103,8 @@
 							db_query("INSERT INTO $unreadtbl (person,message) "
 								."SELECT DISTINCT person,$id FROM "
 								."$logintbl WHERE board=\"$board\" AND person!=\"".$userinfo['id']."\";");
+							db_unlock();
 						}
-						db_unlock();
 						return true;
 					}
 					else

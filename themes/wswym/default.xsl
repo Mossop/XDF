@@ -131,6 +131,45 @@
 							<td colspan="2">
 								<hr/>
 								<h2>Post a new thread:</h2>
+								<form action="xdf.php" method="post">
+									<input type="hidden" name="command1" value="add"/>
+									<input type="hidden" name="class1" value="thread"/>
+									<input type="hidden" name="folder1">
+										<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+									</input>
+									<input type="hidden" name="command2" value="add"/>
+									<input type="hidden" name="class2" value="message"/>
+									<input type="hidden" name="thread2" value="lastid"/>
+									<table>
+										<tr>
+											<td>Subject:</td>
+											<td><input type="text" name="name1" size="70"/></td>
+										</tr>
+										<tr>
+											<td colspan="2">
+												<textarea name="content2" rows="15" cols="60"></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2" align="center">
+												<input type="submit" value="Add"/>
+											</td>
+										</tr>
+									</table>
+									<input type="hidden" name="command3" value="view"/>
+									<input type="hidden" name="class3" value="board"/>
+									<input type="hidden" name="name3" value="folderlist"/>
+									<input type="hidden" name="command4" value="view"/>
+									<input type="hidden" name="class4" value="folder"/>
+									<input type="hidden" name="id4">
+										<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+									</input>
+									<input type="hidden" name="depth4" value="1"/>
+									<input type="hidden" name="name4" value="threadlist"/>
+									<input type="hidden" name="folder">
+										<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+									</input>
+								</form>
 							</td>
 						</tr>
 					</xsl:if>
@@ -236,6 +275,38 @@
 						<tr>
 							<td>
 								<h2>Add a new reply to this thread:</h2>
+								<form action="xdf.php" method="post">
+									<input type="hidden" name="command1" value="add"/>
+									<input type="hidden" name="class1" value="message"/>
+									<input type="hidden" name="thread1">
+										<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+									</input>
+									<table>
+										<tr>
+											<td>
+												<textarea name="content1" rows="15" cols="60"></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td align="center">
+												<input type="submit" value="Add"/>
+											</td>
+										</tr>
+									</table>
+									<input type="hidden" name="command2" value="view"/>
+									<input type="hidden" name="class2" value="board"/>
+									<input type="hidden" name="name2" value="folderlist"/>
+									<input type="hidden" name="command3" value="view"/>
+									<input type="hidden" name="class3" value="thread"/>
+									<input type="hidden" name="id3">
+										<xsl:attribute name="value"><xsl:value-of select="@id"/></xsl:attribute>
+									</input>
+									<input type="hidden" name="depth3" value="2"/>
+									<input type="hidden" name="name3" value="messagelist"/>
+									<input type="hidden" name="folder">
+										<xsl:attribute name="value"><xsl:value-of select="/DisplaySet/@folder"/></xsl:attribute>
+									</input>
+								</form>
 							</td>
 						</tr>
 					</xsl:if>

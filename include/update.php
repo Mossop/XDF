@@ -30,7 +30,7 @@
 						{
 							if (($type=="int")&&($value=="lastid"))
 							{
-								$value=mysql_insert_id();
+								$value=db_last_id();
 							}
 							$sql=$sql.$value.",";
 						}
