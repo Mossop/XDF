@@ -6,7 +6,102 @@
 
 	<xsl:output method="html" omit-xml-declaration="yes" encoding="iso-8859-1" indent="yes"/>
 
-	<xsl:param name="loginid"/>
+	<xsl:template name="checkaccess">
+		<xsl:param name="class"/>
+		<xsl:param name="type"/>
+	
+		<xsl:choose>
+			<xsl:when test="count(/DisplaySet/Login/Group[@id='admin']) &gt; 0">
+				1
+			</xsl:when>
+			<xsl:when test="count(/DisplaySet/Login/Group[@id=concat($class,'admin')]) &gt; 0">
+				1
+			</xsl:when>
+			<xsl:when test="count(/DisplaySet/Login/Group[@id=concat($class,$type)]) &gt; 0">
+				1
+			</xsl:when>
+			<xsl:otherwise>
+				0
+			</xsl:otherwise>
+		</xsl:choose>	
+	</xsl:template>
+	
+	<xsl:variable name="messageadd">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">message</xsl:with-param>
+			<xsl:with-param name="type">add</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="contactadd">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">contact</xsl:with-param>
+			<xsl:with-param name="type">add</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="loginadd">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">login</xsl:with-param>
+			<xsl:with-param name="type">add</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="folderadd">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">folder</xsl:with-param>
+			<xsl:with-param name="type">add</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="folderview">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">folder</xsl:with-param>
+			<xsl:with-param name="type">view</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="personview">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">person</xsl:with-param>
+			<xsl:with-param name="type">view</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="loginview">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">login</xsl:with-param>
+			<xsl:with-param name="type">view</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="loginadmin">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">login</xsl:with-param>
+			<xsl:with-param name="type">admin</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="folderadmin">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">folder</xsl:with-param>
+			<xsl:with-param name="type">admin</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="personadmin">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">person</xsl:with-param>
+			<xsl:with-param name="type">admin</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
+	
+	<xsl:variable name="messageadmin">
+		<xsl:call-template name="checkaccess">
+			<xsl:with-param name="class">message</xsl:with-param>
+			<xsl:with-param name="type">admin</xsl:with-param>
+		</xsl:call-template>
+	</xsl:variable>
 	
 	<xsl:template match="/DisplaySet">
 		<html>
@@ -30,22 +125,28 @@
 						<td>
 							<table>
 								<tr>
-									<td>
-										<a>
-											<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="Board/@rootfolder"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="Board/@rootfolder"/></xsl:attribute>
-											Announcements
-										</a>
-									</td>
-									<td>
-										<a href="xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=people&amp;name2=peoplelist">
-											Contacts
-										</a>
-									</td>
-									<td>
-										<a href="xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=users&amp;name2=userlist">
-											Users
-										</a>
-									</td>
+									<xsl:if test="$folderview=1">
+										<td>
+											<a>
+												<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="Board/@rootfolder"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="Board/@rootfolder"/></xsl:attribute>
+												Announcements
+											</a>
+										</td>
+									</xsl:if>
+									<xsl:if test="$personview=1">
+										<td>
+											<a href="xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=people&amp;name2=peoplelist">
+												Contacts
+											</a>
+										</td>
+									</xsl:if>
+									<xsl:if test="$loginview=1">
+										<td>
+											<a href="xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=users&amp;name2=userlist">
+												Users
+											</a>
+										</td>
+									</xsl:if>
 								</tr>
 							</table>
 						</td>

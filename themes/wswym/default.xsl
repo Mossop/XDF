@@ -126,12 +126,14 @@
 							</table>
 						</td>
 					</tr>
-					<tr>
-						<td colspan="2">
-							<hr/>
-							<h2>Post a new thread:</h2>
-						</td>
-					</tr>
+					<xsl:if test="$messageadd=1">
+						<tr>
+							<td colspan="2">
+								<hr/>
+								<h2>Post a new thread:</h2>
+							</td>
+						</tr>
+					</xsl:if>
 					<tr>
 						<td align="center" colspan="2">
 						</td>
@@ -167,21 +169,23 @@
 													<td align="left" class="messageheader">Posted by <xsl:value-of select="Person/@nickname"/></td>
 													<td align="right" class="messageheader"><xsl:apply-templates select="Date"/></td>
 												</tr>
-												<tr>
-													<td colspan="2" width="578" class="messageheader">
-														<a>
-															Attach File
-														</a>
-														<xsl:text> </xsl:text>
-														<a>
-															Edit
-														</a>
-														<xsl:text> </xsl:text>
-														<a>
-															Delete
-														</a>
-													</td>
-												</tr>
+												<xsl:if test="($messageadmin=1) or (Person/@id=/DisplaySet/Login/Person/@id)">
+													<tr>
+														<td colspan="2" width="578" class="messageheader">
+															<a>
+																Attach File
+															</a>
+															<xsl:text> </xsl:text>
+															<a>
+																Edit
+															</a>
+															<xsl:text> </xsl:text>
+															<a>
+																Delete
+															</a>
+														</td>
+													</tr>
+												</xsl:if>
 											</table>
 										</td>
 									</tr>
@@ -223,20 +227,18 @@
 							</xsl:for-each>
 						</td>
 					</tr>
-					<tr>
-						<td>
-							<hr/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<h2>Add a new reply to this thread:</h2>
-						</td>
-					</tr>
-					<tr>
-						<td align="center">
-						</td>
-					</tr>
+					<xsl:if test="$messageadd=1">
+						<tr>
+							<td>
+								<hr/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<h2>Add a new reply to this thread:</h2>
+							</td>
+						</tr>
+					</xsl:if>
 				</table>
 			</td>
 		</xsl:for-each>
