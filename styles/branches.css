@@ -81,21 +81,6 @@ a {
 	text-decoration: underline;
 }
 
-.messageheader {
-	font-size: 14px;
-	color: white;
-	background: blue;
-}
-
-td.messageheader a {
-	color:aqua;
-}
-
-.messagebody {
-	font-size: 12px;
-	background: silver;
-}
-
 a.openfolder {
 	color: white;
 	background: blue;
