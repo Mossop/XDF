@@ -41,7 +41,10 @@ CREATE TABLE Person (
 	fullname	VARCHAR(30),
 	email		VARCHAR(30),
 	nickname	VARCHAR(20),
-	phone		VARCHAR(20),
+	homephone	VARCHAR(20),
+	mobilephone	VARCHAR(20),
+	workphone	VARCHAR(20),
+	fax		VARCHAR(20),
 	PRIMARY KEY (id)
 );
 

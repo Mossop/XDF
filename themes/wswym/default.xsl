@@ -40,7 +40,7 @@
 				<tr>
 					<td><b>Name</b></td>
 					<td><b>Email</b></td>
-					<td><b>Phone</b></td>
+					<td><b>Mobile Phone</b></td>
 				</tr>
 				<xsl:for-each select="People/Person">
 					<tr>
@@ -51,7 +51,7 @@
 								<xsl:value-of select="@email"/>
 							</a>
 						</td>
-						<td><xsl:value-of select="@phone"/></td>
+						<td><xsl:value-of select="@mobilephone"/></td>
 					</tr>
 				</xsl:for-each>
 			</table>
