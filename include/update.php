@@ -4,7 +4,7 @@
 	{
 		global $unreadtbl,$logintbl,$board,$userinfo,$editedtbl;
 		
-		if ((isset($command['class']))&&(isset($command['id'])))
+		if ((isset($command['class']))&&(isset($command['id']))&&(can_edit($command['class'],$command['id'])))
 		{
 			if (($command['class']!="file")&&($table=get_table_for_class($command['class'])))
 			{

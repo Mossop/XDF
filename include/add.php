@@ -4,7 +4,7 @@
 	{
 		global $unreadtbl,$logintbl,$board,$userinfo,$editedtbl;
 		
-		if (isset($command['class']))
+		if ((isset($command['class']))&&(can_add($command['class'])))
 		{
 			if (($command['class']=="file")&&(isset($command['message'])))
 			{
