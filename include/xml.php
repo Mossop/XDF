@@ -18,7 +18,7 @@
 		
 		function addElement(&$element)
 		{
-			$this->elements[]=$element;
+			$this->elements[]=&$element;
 		}
 		
 		function setAttribute($attribute,$value)
