@@ -140,6 +140,16 @@
 		}
 	}
 	
+	function process_command($number,$command)
+	{
+		print ("<b>command $number</b><br>");
+		while (list($key,$val)=each($command))
+		{
+			print ("$key => $val<br>");
+		}
+		return true;
+	}
+	
 	# Load the board information
   include "init.php";
 
@@ -173,7 +183,48 @@
 				$query=db_query("SELECT $persontbl.* FROM $persontbl,$logintbl WHERE $logintbl.person=$persontbl.id AND $logintbl.id=\"$loginid\" AND $logintbl.board=\"$board\";");
 				$userinfo=mysql_fetch_array($query);
 				
-				print ("Hello ".$userinfo['fullname']);
+				print ("Hello ".$userinfo['fullname']."<br><br>");
+				
+				$max=0;
+				if ($_SERVER['REQUEST_METHOD']=='GET')
+				{
+					$http_vars=&$_GET;
+				}
+				else if ($_SERVER['REQUEST_METHOD']=='POST')
+				{
+					$http_vars=&$_POST;
+				}
+				else
+				{
+					$http_vars=array();
+				}
+			
+				while (list($key,$val)=each($http_vars))
+				{
+					if (ereg("([_a-zA-Z]+)([0-9]+)",$key,$regs))
+					{
+						if (isset($command[$regs[2]]))
+						{
+							$thiscommand=&$command[$regs[2]];
+							$thiscommand[$regs[1]]=$val;
+						}
+						else
+						{
+							$command[$regs[2]]=array($regs[1] => $val);
+						}
+						if ($max<$regs[2])
+						{
+							$max=$regs[2];
+						}
+					}
+				}
+				
+				$loop=0;
+				while (($loop<=$max)&&
+					((!isset($command[$loop]))||(process_command($loop,$command[$loop]))))
+				{
+					$loop++;
+				}
 			}
 			else
 			{
