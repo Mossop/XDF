@@ -1,5 +1,17 @@
 <?php
 
+	function delete_file($id)
+	{
+	}
+	
+	function delete_person($id)
+	{
+	}
+	
+	function delete_login($id)
+	{
+	}
+	
 	# Deletes a message and all files associated with it.
 	function delete_message($message)
 	{
@@ -43,7 +55,7 @@
 			delete_thread($thread[0]);
 		}
 		db_lock(array($foldertbl => 'READ'));
-		$query=mysql_query("SELECT id FROM $foldertbl WHERE parent=$folder;",$connection);
+		$query=db_query("SELECT id FROM $foldertbl WHERE parent=$folder;");
 		db_unlock();
 		while ($sub=mysql_fetch_row($query))
 		{
@@ -53,7 +65,42 @@
 	
 	function process_delete_command($number,$command)
 	{
-		return true;
+		if ((isset($command['class']))&&(isset($command['id']))&&(can_edit($command['class'],$command['id'])))
+		{
+			if ($command['class']=='folder')
+			{
+				delete_folder($command['id']);
+			}
+			else if ($command['class']=='message')
+			{
+				delete_message($command['id']);
+			}
+			else if ($command['class']=='thread')
+			{
+				delete_thread($command['id']);
+			}
+			else if ($command['class']=='file')
+			{
+				delete_file($command['id']);
+			}
+			else if ($command['class']=='person')
+			{
+				delete_person($command['id']);
+			}
+			else if ($command['class']=='login')
+			{
+				delete_login($command['id']);
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 ?>
