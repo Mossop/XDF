@@ -417,6 +417,14 @@
 					$root=&$xml->getRootElement();
 					$root->setType("DisplaySet");
 					$root->setAttribute("board",$boardinfo['id']);
+					$userelement=&getLoginElement($loginid,0);
+					$boardelement = new XmlElement;
+					$boardelement->setType("Board");
+					$boardelement->setAttribute("id",$boardinfo['id']);
+					$boardelement->setAttribute("name",$boardinfo['name']);
+					$boardelement->setAttribute("rootfolder",$boardinfo['rootfolder']);
+					$root->addElement($boardelement);
+					$root->addElement($userelement);
 					$displays=0;
 					
 					$loop=0;
@@ -449,7 +457,7 @@
 						print(xslt_process($xh,'arg:/_xml','themes/'.$stylesheet.'.xsl',NULL,array('/_xml' => $xml->toString()),$othercommands));
 						xslt_free($xh);
 
-#						print($xml->toString());
+						print($xml->toString());
 					}
 					else
 					{

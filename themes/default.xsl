@@ -8,59 +8,90 @@
 
 	<xsl:param name="folder"/>
 
-	<xsl:template match="/">
-		<html>
-			<head>
-		    <title>IEE Wales South West Younger Members Bulletin Board</title>
-		    <link rel="stylesheet" href="styles/branches.css" type="text/css"/>
-		    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-			</head>
-
-			<body bgcolor="#FFFFFF">
-			  <table cellspacing="0" cellPadding="0" border="0" width="778">
-			    <tr>
-  			    <td width="100" align="center" valign="top" rowspan="2">
-  			      <img src="images/logo.gif" alt="IEE Logo"/>
-  			    </td>
-  			    <td valign="top" align="left" class="fullwidth" colspan="2">
-  			      <img src="images/banner.jpg" alt="Communities image"/>
-  			    </td>
-  			  </tr>
-  			  <tr>
-						<td>
-							<table>
-								<tr>
-									<td>Announcements</td>
-									<td>Contacts</td>
-									<td>Users</td>
-								</tr>
-							</table>
-						</td>
-						<td align="right">
-							Currently logged in as Dave (Dave Townsend)
-						</td>
-					</tr>
-					<tr>
-						<td colspan="3" width="778">
-							<hr/>
-							<table border="0">
-								<tr>
-								
-									<xsl:apply-templates/>
-									
-									<td width="578" rowspan="2" valign="top">
-									</td>
-								
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>
-			</body>
-		</html>
+	<xsl:include href="template.xsl"/>
+	
+	<xsl:template match="Date">
+		<xsl:value-of select="@hour"/>:<xsl:value-of select="@minute"/>, <xsl:value-of select="@day"/>/<xsl:value-of select="@month"/>/<xsl:value-of select="@year"/>
+	</xsl:template>
+	
+	<xsl:template match="Display[@name='userlist']">
+		<td width="578" valign="top">
+			<table>
+				<tr>
+					<td valign="top" colspan="5" width="578">
+						<h1>WSWYM Bulletin Board users</h1>
+					</td>
+				</tr>
+				<tr>
+					<td><b>Username</b></td>
+					<td><b>Last on</b></td>
+					<td><b>Full Name</b></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<xsl:apply-templates mode="userlist"/>
+			</table>
+		</td>
 	</xsl:template>
 
-	<xsl:variable name="depth">0</xsl:variable>
+	<xsl:template match="LoginInfo" mode="userlist">
+		<xsl:for-each select="Login">
+			<xsl:sort select="@id"/>
+			<tr>
+				<td><xsl:value-of select="@id"/></td>
+				<td><xsl:apply-templates select="Date"/></td>
+				<xsl:for-each select="Person">
+					<td><xsl:value-of select="@fullname"/></td>
+				</xsl:for-each>
+				<td></td>
+				<td></td>
+			</tr>
+		</xsl:for-each>
+	</xsl:template>
+		
+	<xsl:template match="Display[@name='peoplelist']">
+		<td width="578" valign="top">
+			<table border="0">
+				<tr>
+					<td valign="top" colspan="6" width="578">
+						<h1>WSWYM Bulletin Board Contacts</h1>
+					</td>
+				</tr>
+				<tr>
+					<td><b>Name</b></td>
+					<td><b>Email</b></td>
+					<td><b>Phone</b></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<xsl:apply-templates mode="peoplelist"/>
+			</table>
+		</td>
+	</xsl:template>
+	
+	<xsl:template match="People" mode="peoplelist">
+		<xsl:for-each select="Person">
+			<tr>
+				<td><xsl:value-of select="@fullname"/></td>
+				<td>
+					<a>
+						<xsl:attribute name="email">mailto:<xsl:value-of select="@email"/></xsl:attribute>
+						<xsl:value-of select="@email"/>
+					</a>
+				</td>
+				<td><xsl:value-of select="@phone"/></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</xsl:for-each>
+	</xsl:template>
+	
+	<xsl:template match="Display[@name='threadlist']">
+		<td width="578" valign="top">
+		</td>
+	</xsl:template>
 	
 	<xsl:template match="Display[@name='folderlist']">
 		<td width="200" valign="top">
@@ -76,11 +107,6 @@
 		</td>
 	</xsl:template>
 
-	<xsl:template match="Folder" mode="depthcount">
-		<xsl:variable name="depth"><xsl:value-of select="$depth"/></xsl:variable>
-		<xsl:apply-templates select="Folder" mode="depthcount"/>
-	</xsl:template>
-	
 	<xsl:template match="Folder" mode="folderlist">
 		<xsl:param name="indent"/>
 		<xsl:variable name="status"/>
@@ -122,7 +148,7 @@
 
 		<a>
 			<xsl:attribute name="class"><xsl:value-of select="$status"/>folder</xsl:attribute>
-			<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=1&amp;folder=<xsl:value-of select="@id"/></xsl:attribute>
+			<xsl:attribute name="href">xdf.php?command1=view&amp;class1=board&amp;name1=folderlist&amp;command2=view&amp;class2=folder&amp;id2=<xsl:value-of select="@id"/>&amp;depth2=1&amp;name2=threadlist&amp;folder=<xsl:value-of select="@id"/></xsl:attribute>
 			<xsl:value-of select="@name"/>
 		</a>
 	</xsl:template>
