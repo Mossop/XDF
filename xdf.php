@@ -249,6 +249,10 @@
 		}
 	}
 	
+	function error($message)
+	{
+	}
+	
 	# Include the main functions.
 	include "include/view.php";
 	include "include/add.php";
@@ -339,8 +343,22 @@
 				
 				if (isset($http_vars['command']))
 				{
-					if ($http_vars['command']=="downloadfile")
+					if (($http_vars['command']=="downloadfile")&&(isset($file)))
 					{
+						db_lock(array($filetbl => 'READ'));
+						$query=db_query("SELECT * FROM $filetbl WHERE id=$file;");
+						if ($fileinfo=mysql_fetch_array($query))
+						{
+							Header("Content-type: ".$fileinfo['mimetype']);
+							Header("Content-Disposition: attachment; filename=\"".$fileinfo['name']."\"");
+							$fn=fopen("files/".$fileinfo['name'],"r");
+							fpassthru($fn);
+						}
+						else
+						{
+							error("Failed trying to download that file");
+						}
+						db_unlock();
 					}
 				}
 				else
@@ -395,13 +413,13 @@
 		else
 		{
 			# Couldn't get the board details. Something is screwed.
-			include "badsetup.php";
+			header("Location: badsetup.php");
 		}
 	}
 	else
 	{
 		# Board wasn't specified
-		include "badsetup.php";
+		header("Location: badsetup.php");
 	}
 
 ?>
