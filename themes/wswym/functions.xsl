@@ -29,4 +29,16 @@
     </xsl:choose>
 	</xsl:template>
 
+	<xsl:template match="Date">
+		<xsl:value-of select="format-number(@hour,'0')"/>
+		<xsl:text>:</xsl:text>
+		<xsl:value-of select="format-number(@minute,'0')"/>
+		<xsl:text>, </xsl:text>
+		<xsl:value-of select="@day"/><xsl:value-of select="@suffix"/>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@longmonth"/>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@year"/>
+	</xsl:template>
+	
 </xsl:stylesheet>
