@@ -2,7 +2,22 @@
 
 	function process_view_command($number,$command)
 	{
-		return true;
+		if (isset($command['class']))
+		{
+			if ($command['class']=="contact")
+			{
+			}
+			else if ($command['class']=="user")
+			{
+			}
+			else
+			{
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 ?>
